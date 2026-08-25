@@ -19,7 +19,8 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.nav{height:68px
   max-height:220px;
   object-fit:contain;
   background:#211e27;
-}.viewtoggle{margin-left:auto}.leader{align-items:stretch}.rank{min-width:170px;overflow:hidden;padding:0}.rank img{width:100%;height:105px;object-fit:cover;display:block;background:var(--lav)}.rank .rankbody{padding:10px}.toolbar{display:flex;gap:8px;margin-bottom:14px}.toolbar input,.toolbar select,.modal input,.modal textarea{border:1px solid var(--line);background:#211e27;color:var(--ink);border-radius:10px;padding:10px 12px;outline:none}.toolbar input{flex:1}.post{border:1px solid var(--line);background:var(--card);border-radius:15px;overflow:hidden}.postbody{padding:18px}.posttop{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--muted)}.tag{font-weight:750}.post p{line-height:1.72;margin:13px 0 16px}.reacts{display:flex;gap:5px;flex-wrap:wrap}.react{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 9px;font-size:12px}.react.active{background:var(--lav);border-color:#d5c1e8}.reacts{position:relative}.reaction-menu.open{display:grid}.react-choice{
+}.viewtoggle{margin-left:auto}.leader{align-items:stretch}.rank{min-width:170px;overflow:hidden;padding:0}.rank img{width:100%;height:105px;object-fit:cover;display:block;background:var(--lav)}.rank .rankbody{padding:10px}.toolbar{display:flex;gap:8px;margin-bottom:14px}.toolbar input,.toolbar select,.modal input,.modal textarea{border:1px solid var(--line);background:#211e27;color:var(--ink);border-radius:10px;padding:10px 12px;outline:none}.toolbar input{flex:1}.post{border:1px solid var(--line);background:var(--card);border-radius:15px;overflow:hidden}.postbody{padding:18px}.posttop{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--muted)}.tag{font-weight:750}.post p{line-height:1.72;margin:13px 0 16px}.reacts{display:flex;gap:5px;flex-wrap:wrap}.react{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 9px;font-size:12px}.react.active{background:var(--lav);border-color:#d5c1e8}.reacts{position:relative}.reaction-menu{display:none;position:absolute;left:0;bottom:calc(100% + 5px);z-index:50;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px;box-shadow:0 12px 30px #0008;grid-template-columns:repeat(5,1fr);gap:2px;width:178px}
+.reaction-menu.open{display:grid}.react-choice{
 border:0;
 background:transparent;
 color:var(--ink);
@@ -116,8 +117,13 @@ function renderFeed(mem){
 
 function leader(items){return `<div class="leader">${items.slice(0,3).map((x,i)=>`<div class="rank"><img src="${esc(x.src)}" alt="Top memory"><div class="rankbody"><small>#${i+1} most reacted</small><strong>${esc(x.alias)}</strong><small>${total(x)} reactions</small></div></div>`).join("")}</div>`}
 
+function reactionSummary(x){
+  return REACTIONS.filter(r=>Number(x.reactions?.[r]||0)>0)
+    .map(r=>`<span class="react">${r}${Number(x.reactions[r])}</span>`).join("");
+}
+
 function post(x,mem){
-  return `<article class="post ${mem?"memory":""}" data-search="${esc((x.text||x.caption).toLowerCase())}">${mem?`<img src="${esc(x.src)}" alt="Shared memory">`:""}<div class="postbody"><div class="posttop"><span class="tag">${esc(x.tag)}</span><span>${esc(x.alias)}</span></div><p>${esc(x.text||x.caption)}</p><div class="reacts"><button class="react reaction-trigger" onclick="toggleReactionMenu(this)">React <span>${total(x)}</span></button><div class="reaction-menu">${REACTIONS.map(r=>`<button class="react-choice" onclick="react('${esc(x.tag)}',this,'${r}')">${r} <span>${x.reactions?.[r]||0}</span></button>`).join("")}</div></div></div></article>`
+  return `<article class="post ${mem?"memory":""}" data-search="${esc((x.text||x.caption).toLowerCase())}">${mem?`<img src="${esc(x.src)}" alt="Shared memory">`:""}<div class="postbody"><div class="posttop"><span class="tag">${esc(x.tag)}</span><span>${esc(x.alias)}</span></div><p>${esc(x.text||x.caption)}</p><div class="reacts">${reactionSummary(x)}<button class="react reaction-trigger" onclick="toggleReactionMenu(this)">React <span>${total(x)}</span></button><div class="reaction-menu">${REACTIONS.map(r=>`<button class="react-choice" onclick="react('${esc(x.tag)}',this,'${r}')">${r}</button>`).join("")}</div></div></div></article>`
 }
 
 function toggleGrid(){const f=document.querySelector("#feed"),b=document.querySelector("#gridBtn");f.classList.toggle("grid");b.textContent=f.classList.contains("grid")?"List view":"Grid view"} 
@@ -131,47 +137,33 @@ function toggleReactionMenu(btn){
 }
 
 async function react(tag,btn,r){
-  const arr =
-    state[view==="memories" ? "memories" : "confessions"];
-
-  const x = arr.find(y => y.tag === tag);
-
-  if(!x) return;
+  const arr=view==="memories"?state.memories:state.confessions;
+  const x=arr.find(y=>y.tag===tag);
+  if(!x)return;
 
   try{
-    const result = await api("/reactions",{
+    const result=await api("/reactions",{
       method:"POST",
       body:JSON.stringify({
-        post_type:view==="memories"
-          ? "memory"
-          : "confession",
+        post_type:view==="memories"?"memory":"confession",
         post_id:x.id,
-        tag:x.tag,
         reaction:r
       })
     });
 
-    x.reactions = result.reactions || {};
+    x.reactions=result.reactions||{};
 
-    /*
-     * Only redraw this post instead of reloading the entire page.
-     * This makes reaction changes effectively instant.
-     */
-    const oldPost = btn.closest(".post");
-
+    const oldPost=btn.closest(".post");
     if(oldPost){
-      const temp = document.createElement("div");
-      temp.innerHTML = post(x,view==="memories");
-
+      const temp=document.createElement("div");
+      temp.innerHTML=post(x,view==="memories");
       oldPost.replaceWith(temp.firstElementChild);
     }
-
   }catch(err){
     console.error(err);
     alert("Reaction could not be saved.");
   }
 }
-
 document.addEventListener("click",e=>{
   if(!e.target.closest(".reacts"))document.querySelectorAll(".reaction-menu.open").forEach(m=>m.classList.remove("open"));
 });
@@ -216,7 +208,6 @@ async function submitPost(mem){
   if(!text)return alert("Please add some text.");
 
   let payload={
-    tag:(mem?"#M-":"#CH-")+Date.now(),
     name:alias,
     alias:alias,
     message:text,
@@ -234,7 +225,7 @@ async function submitPost(mem){
       body:JSON.stringify(payload)
     });
     closeModal();
-    alert(mem?"Memory submitted.":"Confession submitted.");
+    alert(mem?"Memory submitted for admin review.":"Confession submitted for admin review.");
     await loadData();
   }catch(err){
     console.error(err);
