@@ -31,6 +31,14 @@ CREATE TABLE IF NOT EXISTS feedback (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS birthdays (
+    id BIGSERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    birthday DATE NOT NULL,
+    visitor_id TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS reactions (
     id BIGSERIAL PRIMARY KEY,
     post_type TEXT NOT NULL CHECK (post_type IN ('confession', 'memory')),
@@ -38,6 +46,15 @@ CREATE TABLE IF NOT EXISTS reactions (
     reaction TEXT NOT NULL,
     count INTEGER NOT NULL DEFAULT 0,
     UNIQUE (post_type, post_id, reaction)
+);
+
+CREATE TABLE IF NOT EXISTS reaction_votes (
+    id BIGSERIAL PRIMARY KEY,
+    post_type TEXT NOT NULL CHECK (post_type IN ('confession', 'memory')),
+    post_id BIGINT NOT NULL,
+    reaction TEXT NOT NULL,
+    visitor_id TEXT NOT NULL,
+    UNIQUE (post_type, post_id, reaction, visitor_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_confessions_created_at

@@ -7,12 +7,13 @@ export default async function handler(req, res) {
   try {
     if (!authorized(req)) return res.status(401).json({ error: "Unauthorized" });
     if (req.method === "GET") {
-      const [confessions, memories, feedback] = await Promise.all([
+      const [confessions, memories, feedback, published] = await Promise.all([
         sql`SELECT id, tag, name, message, created_at, 'confession' AS kind, NULL::text AS image_url FROM confessions WHERE approved = false ORDER BY created_at ASC`,
         sql`SELECT id, tag, name, message, image_url, created_at, 'memory' AS kind FROM memories WHERE approved = false ORDER BY created_at ASC`,
-        sql`SELECT id, name, message, concern, created_at FROM feedback ORDER BY concern DESC, created_at DESC`
+        sql`SELECT id, name, message, concern, created_at FROM feedback ORDER BY concern DESC, created_at DESC`,
+        sql`SELECT id, tag, name, message, created_at, approved, 'confession' AS kind, NULL::text AS image_url FROM confessions WHERE approved = true UNION ALL SELECT id, tag, name, message, created_at, approved, 'memory' AS kind, image_url FROM memories WHERE approved = true ORDER BY created_at DESC`
       ]);
-      return res.status(200).json({ confessions, memories, feedback });
+      return res.status(200).json({ confessions, memories, feedback, published });
     }
     if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
     const { action, kind, id } = req.body || {};
