@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS memories (
 
 -- Safe for existing databases created with older versions of the project.
 ALTER TABLE memories ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE confessions ADD COLUMN IF NOT EXISTS image_url TEXT;
 
 CREATE TABLE IF NOT EXISTS feedback (
     id BIGSERIAL PRIMARY KEY,
@@ -55,6 +56,15 @@ CREATE TABLE IF NOT EXISTS reaction_votes (
     reaction TEXT NOT NULL,
     visitor_id TEXT NOT NULL,
     UNIQUE (post_type, post_id, reaction, visitor_id)
+);
+
+CREATE TABLE IF NOT EXISTS replies (
+    id BIGSERIAL PRIMARY KEY,
+    post_type TEXT NOT NULL CHECK (post_type IN ('confession', 'memory')),
+    post_id BIGINT NOT NULL,
+    name TEXT NOT NULL DEFAULT 'anonymous',
+    message TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_confessions_created_at

@@ -15,7 +15,6 @@ export default async function handler(req, res) {
         FROM memories m
         LEFT JOIN reactions r
           ON r.post_type = 'memory' AND r.post_id = m.id
-        WHERE m.approved = true
         GROUP BY m.id
         ORDER BY m.created_at DESC
       `;
@@ -53,19 +52,18 @@ export default async function handler(req, res) {
         )
         VALUES (
           nextval(pg_get_serial_sequence('memories', 'id')),
-          'PENDING-M-' ||
-            currval(pg_get_serial_sequence('memories', 'id')),
+          '#M-' || LPAD(currval(pg_get_serial_sequence('memories', 'id'))::text, 12, '0'),
           ${name || "anonymous"},
           ${message},
           ${image_url},
-          false
+          true
         )
         RETURNING *
       `;
 
       return res.status(201).json({
         ...rows[0],
-        status: "pending"
+        status: "approved"
       });
     }
 

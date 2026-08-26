@@ -15,7 +15,6 @@ export default async function handler(req, res) {
         FROM confessions c
         LEFT JOIN reactions r
           ON r.post_type = 'confession' AND r.post_id = c.id
-        WHERE c.approved = true
         GROUP BY c.id
         ORDER BY c.created_at DESC
       `;
@@ -43,19 +42,18 @@ export default async function handler(req, res) {
         )
         VALUES (
           nextval(pg_get_serial_sequence('confessions', 'id')),
-          'PENDING-CH-' ||
-            currval(pg_get_serial_sequence('confessions', 'id')),
+          '#CH-' || LPAD(currval(pg_get_serial_sequence('confessions', 'id'))::text, 12, '0'),
           ${name || "anonymous"},
           ${message},
           ${image_url || null},
-          false
+          true
         )
         RETURNING *
       `;
 
       return res.status(201).json({
         ...rows[0],
-        status: "pending"
+        status: "approved"
       });
     }
 

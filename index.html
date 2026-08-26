@@ -117,7 +117,7 @@ function render(){
 function homeDiscovery(){const now=new Date(),m=now.getMonth(),d=now.getDate();const upcoming=state.birthdays.map(x=>({...x,date:new Date(x.birthday)})).filter(x=>!Number.isNaN(x.date)).sort((a,b)=>((a.date.getMonth()-m+12)%12)*32+a.date.getDate()-d-(((b.date.getMonth()-m+12)%12)*32+b.date.getDate())).slice(0,4);const today=[...state.confessions,...state.memories].filter(x=>{const date=new Date(x.created_at);return date.getMonth()===m&&date.getDate()===d}).slice(0,3);return `<section class="home-discovery"><div class="discovery-card"><div class="eyebrow">coming up</div><h3>Upcoming birthdays</h3>${upcoming.length?upcoming.map(x=>`<div class="mini-item"><b>${esc(x.name)}</b><small>${x.date.toLocaleDateString(undefined,{month:"long",day:"numeric"})}</small></div>`).join(""):`<div class="mini-item"><small>No birthdays added yet.</small></div>`}<button class="btn" style="margin-top:12px" onclick="openModal('birthday')">View tracker</button></div><div class="discovery-card"><div class="eyebrow">from the archive</div><h3>On this day</h3>${today.length?today.map(x=>`<div class="mini-item"><b>${esc(x.alias)}</b><small>${esc((x.text||x.caption).slice(0,80))}</small></div>`).join(""):`<div class="mini-item"><small>No posts from this date yet — today could be the first.</small></div>`}</div></section>`}
 
 function renderFeed(mem){
-  let items=state[mem?"memories":"confessions"].filter(x=>x.status==="approved");
+  let items=state[mem?"memories":"confessions"];
   items.sort((a,b)=>total(b)-total(a));
   shell(`<main class="page"><button class="back" onclick="go('home')">← Back home</button><div class="pagehead"><div><div class="eyebrow">${mem?"shared memories":"anonymous-ish thoughts"}</div><h2>${mem?"Memories":"Confessions"}</h2><p></p></div><button class="btn primary" onclick="openModal('${mem?"memory":"confession"}')">${mem?"Add a memory":"Post a confession"}</button></div>${mem?leader(items):""}<div class="toolbar"><input id="search" placeholder="Search…" oninput="filterPosts(this.value)"><select onchange="sortPosts(this.value)"><option value="popular">Most reacted</option><option value="new">Newest</option></select><button class="btn viewtoggle" onclick="toggleGrid()" id="gridBtn">List view</button></div><div id="feed" class="feed grid">${items.length?items.map(x=>post(x,mem)).join(""):`<div class="empty">Nothing here yet. Be the first to leave something behind.</div>`}</div></main>`);
 }
@@ -131,12 +131,12 @@ function reactionSummary(x){
 }
 
 function post(x,mem){
-  return `<article class="post ${mem?"memory":""}" data-search="${esc((x.text||x.caption).toLowerCase())}">${mem?`<img src="${esc(x.src)}" alt="Shared memory">`:""}<div class="postbody"><div class="posttop"><span class="tag">${esc(x.tag)}</span><span>${esc(x.alias)}</span></div><p>${esc(x.text||x.caption)}</p><div class="reacts">${reactionSummary(x)}<button class="react reaction-trigger" onclick="toggleReactionMenu(this)">React <span>${total(x)}</span></button><div class="reaction-menu">${REACTIONS.map(r=>`<button class="react-choice" onclick="react('${esc(x.tag)}',this,'${r}')">${r}</button>`).join("")}</div></div></div></article>`
+  return `<article class="post ${mem?"memory":""}" data-search="${esc((x.text||x.caption).toLowerCase())}">${x.src?`<img src="${esc(x.src)}" alt="Shared attachment">`:""}<div class="postbody"><div class="posttop"><span class="tag">${esc(x.tag)}</span><span>${esc(x.alias)}</span></div><p>${esc(x.text||x.caption)}</p><div class="reacts">${reactionSummary(x)}<button class="react reaction-trigger" onclick="toggleReactionMenu(this)">React <span>${total(x)}</span></button><button class="react" onclick="openReplies('${mem?"memory":"confession"}',${Number(x.id)})">Reply</button><div class="reaction-menu">${REACTIONS.map(r=>`<button class="react-choice" onclick="react('${esc(x.tag)}',this,'${r}')">${r}</button>`).join("")}</div></div></div></article>`
 }
 
 function toggleGrid(){const f=document.querySelector("#feed"),b=document.querySelector("#gridBtn");f.classList.toggle("grid");b.textContent=f.classList.contains("grid")?"List view":"Grid view"} 
 function filterPosts(q){document.querySelectorAll(".post").forEach(p=>p.style.display=p.dataset.search.includes(q.toLowerCase())?"":"none")}
-function sortPosts(v){let mem=view==="memories",items=state[mem?"memories":"confessions"].filter(x=>x.status==="approved");if(v==="popular")items.sort((a,b)=>total(b)-total(a));if(v==="new")items.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));document.querySelector("#feed").innerHTML=items.map(x=>post(x,mem)).join("")}
+function sortPosts(v){let mem=view==="memories",items=state[mem?"memories":"confessions"];if(v==="popular")items.sort((a,b)=>total(b)-total(a));if(v==="new")items.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));document.querySelector("#feed").innerHTML=items.map(x=>post(x,mem)).join("")}
 
 function toggleReactionMenu(btn){
   const menu=btn.parentElement.querySelector(".reaction-menu");
@@ -180,7 +180,7 @@ document.addEventListener("click",e=>{
 
 function openModal(type){
  let body="";
- if(type==="confession")body=`<h3>Post a confession</h3><div class="notice"><b>Commit History Community Standards</b><ol><li>Be kind and respectful. No discrimination, harassment, or hate speech.</li><li>Respect diverse opinions. Constructive criticism is welcome, but we do not tolerate attacks of any kind.</li><li>Keep discussions clean. No explicit, offensive, or NSFW content.</li><li>Don’t gossip. This is not a place to spread harmful rumors or baseless accusations.</li></ol>Before your confessions get posted, they will be screened by the batch representative and other relevant parties.</div><label>Alias / username</label><input id="alias" maxlength="40" placeholder="e.g. sleepdepriveddev"><label>Your confession</label><textarea id="text" maxlength="1200" placeholder="Say what you need to say…"></textarea><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitPost(false)">Submit for review</button></div>`;
+ if(type==="confession")body=`<h3>Post a confession</h3><div class="notice">Posts are shared immediately. Be kind, avoid personal information, and remember that admins can remove harmful content.</div><label>Alias / username</label><input id="alias" maxlength="40" placeholder="e.g. sleepdepriveddev"><label>Image or GIF (optional)</label><div class="uploadbox"><input id="imageFile" type="file" accept="image/*" onchange="loadImageFile(event)"><label class="btn" for="imageFile">Choose an image or GIF</label><img id="imagePreview" class="preview" alt="Preview"></div><input id="src" type="hidden"><label>Your confession</label><textarea id="text" maxlength="1200" placeholder="Say what you need to say…"></textarea><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitPost(false)">Post confession</button></div>`;
  if(type==="memory")body=`<h3>Add a memory</h3><label>Alias</label><input id="alias" maxlength="40" placeholder="e.g. camera roll historian"><label>Image</label><div class="uploadbox"><input id="imageFile" type="file" accept="image/*" onchange="loadImageFile(event)"><label class="btn" for="imageFile">Choose an image</label><div class="uploadhint">Or copy an image and press Ctrl/Cmd + V here.</div><img id="imagePreview" class="preview" alt="Preview"></div><input id="src" type="hidden"><label>Caption</label><textarea id="text" maxlength="500" placeholder="What should we remember about this?"></textarea><div class="notice">Memories are reviewed before publication. Only upload images you have permission to share.</div><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitPost(true)">Submit memory</button></div>`;
  if(type==="feedback"||type==="concern")body=`<h3>${type==="concern"?"Report a serious concern":"Give feedback"}</h3><p>${type==="concern"?"Use this for urgent or serious batch concerns. Moderators will see it in the admin page.":"Tell us what would make this better."}</p><input id="alias" maxlength="40" placeholder="Optional alias"><textarea id="text" maxlength="2000" placeholder="Your message…"></textarea><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitFeedback(${type==="concern"})">Send</button></div>`;
  if(type==="birthday")body=`<h3>Birthday tracker</h3><p>See upcoming birthdays and add yours if you’d like. Sharing is optional.</p><div id="birthdayList" class="empty">Loading birthdays…</div>${localStorage.getItem("birthday-opt-out")==="1"?`<div class="notice">You chose not to add a birthday.</div>`:localStorage.getItem("birthday-added")==="1"?`<div class="notice">Your birthday has already been added from this browser.</div>`:`<div id="birthdayForm"><label>Name</label><input id="birthdayName" maxlength="40" placeholder="Your name"><label>Birthday</label><input id="birthdayDate" type="date"><div class="modalfoot"><button class="btn" onclick="skipBirthday()">No thanks</button><button class="btn primary" onclick="submitBirthday()">Add birthday</button></div></div>`}<div class="modalfoot"><button class="btn" onclick="closeModal()">Close</button></div>`;
@@ -196,6 +196,9 @@ function adminPanel(){
 }
 
 function closeModal(){document.querySelector(".modalback")?.remove()}
+
+async function openReplies(kind,id){openModal("about");document.querySelector(".modal h3").textContent="Replies";document.querySelector(".modal").innerHTML=`<h3>Replies</h3><div id="replyList" class="empty">Loading replies…</div><label>Alias (optional)</label><input id="replyAlias" maxlength="40" placeholder="anonymous"><label>Your reply</label><textarea id="replyText" maxlength="1000" placeholder="Leave a supportive reply…"></textarea><div class="modalfoot"><button class="btn" onclick="closeModal()">Close</button><button class="btn primary" onclick="sendReply('${kind}',${id})">Reply</button></div>`;try{const rows=await api(`/replies?post_type=${kind}&post_id=${id}`);document.querySelector("#replyList").className="";document.querySelector("#replyList").innerHTML=rows.length?rows.map(r=>`<div class="mini-item"><b>${esc(r.name)}</b><small>${esc(r.message)}</small></div>`).join(""):`<div class="empty">No replies yet. Start the conversation.</div>`}catch(err){document.querySelector("#replyList").textContent=`Replies could not be loaded: ${err.message}`}}
+async function sendReply(kind,id){const message=document.querySelector("#replyText").value.trim();if(!message)return alert("Please write a reply.");try{await api("/replies",{method:"POST",body:JSON.stringify({post_type:kind,post_id:id,name:document.querySelector("#replyAlias").value.trim()||"anonymous",message)});closeModal();openReplies(kind,id)}catch(err){alert(err.message||"Reply could not be posted.")}}
 
 async function submitFeedback(concern){const message=document.querySelector("#text").value.trim();if(!message)return alert("Please add a message.");try{await api("/feedback",{method:"POST",body:JSON.stringify({name:document.querySelector("#alias").value.trim()||"anonymous",message,concern})});closeModal();alert("Thanks — your message was sent to the moderators.")}catch(err){alert("Your message could not be sent.")}}
 
@@ -232,8 +235,8 @@ async function submitPost(mem){
     message:text,
     text:text,
     caption:mem?text:undefined,
-    src:mem?document.querySelector("#src").value.trim():undefined,
-    image_url:mem?document.querySelector("#src").value.trim():undefined,  
+    src:document.querySelector("#src")?.value.trim()||undefined,
+    image_url:document.querySelector("#src")?.value.trim()||undefined,
   };
 
   if(mem&&!payload.src)return alert("Please choose or paste an image.");
@@ -244,7 +247,7 @@ async function submitPost(mem){
       body:JSON.stringify(payload)
     });
     closeModal();
-    alert(mem?"Memory submitted for admin review.":"Confession submitted for admin review.");
+    alert(mem?"Memory posted.":"Confession posted.");
     await loadData();
   }catch(err){
     console.error(err);
