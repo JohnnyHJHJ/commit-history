@@ -1,8 +1,19 @@
 import { neon } from "@neondatabase/serverless";
 const sql = neon(process.env.DATABASE_URL);
 
+async function ensureBirthdaysTable() {
+  await sql`CREATE TABLE IF NOT EXISTS birthdays (
+    id BIGSERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    birthday DATE NOT NULL,
+    visitor_id TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  )`;
+}
+
 export default async function handler(req, res) {
   try {
+    await ensureBirthdaysTable();
     if (req.method === "GET") {
       const rows = await sql`SELECT id, name, birthday FROM birthdays ORDER BY EXTRACT(MONTH FROM birthday), EXTRACT(DAY FROM birthday), name`;
       return res.status(200).json(rows);
