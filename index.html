@@ -37,6 +37,7 @@ cursor:pointer
   background:#211e27;
 }.leader{display:flex;gap:9px;overflow:auto;margin-bottom:17px}.rank{min-width:145px;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:13px}.rank small{display:block;color:var(--muted);font-size:11px}.rank strong{display:block;margin:4px 0}.modalback{position:fixed;inset:0;background:#21182788;display:flex;align-items:center;justify-content:center;padding:18px;z-index:30}.modal{width:min(650px,100%);max-height:91vh;overflow:auto;background:var(--card);border-radius:19px;padding:26px;box-shadow:0 25px 80px #21182733}.modal h3{font-size:28px;margin:0 0 15px}.modal p,.modal li{color:#635a69;line-height:1.65}.modal label{display:block;font-size:13px;font-weight:700;margin-top:12px}.remember{display:flex!important;align-items:center;gap:7px;font-weight:500!important}.remember input{width:auto!important;margin:0!important}.modal input,.modal textarea{width:100%;margin-top:6px}.modal textarea{min-height:145px;resize:vertical}.uploadbox{border:1px dashed #5a466e;background:#211c27;border-radius:12px;padding:18px;text-align:center;margin-top:7px}.uploadbox input{display:none}.uploadbox label{display:inline-block!important;margin:0!important}.uploadhint{font-size:12px;color:var(--muted);margin-top:7px}.preview{max-width:100%;max-height:260px;border-radius:12px;margin-top:12px;display:none}.adminstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:15px 0}.stat{border:1px solid var(--line);border-radius:12px;padding:12px;background:#211e27}.stat b{font-size:20px;display:block}.queueitem{border:1px solid var(--line);border-radius:14px;margin:10px 0;background:var(--card);overflow:hidden}.queueitem .qbody{padding:15px}.qmeta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}.qimg{width:100%;max-height:300px;object-fit:cover;display:block}.statuspill{font-size:11px;border-radius:999px;padding:4px 8px;background:var(--lav);color:var(--purple)}.notice{background:var(--lav);color:#c9b9d8;border-radius:12px;padding:14px;margin:15px 0;font-size:13px;line-height:1.55}.modalfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}.error{color:var(--danger);font-size:13px;margin-top:7px}.empty{text-align:center;padding:45px;border:1px dashed var(--line);border-radius:15px;color:var(--muted)}footer{text-align:center;color:#a09aa5;font-size:11px;padding:35px 20px 45px}
 @media(max-width:650px){.features{grid-template-columns:1fr}.pagehead{align-items:flex-start;flex-direction:column}.hero{padding:40px 0 55px}.wrap{padding-top:25px}}
+ .home-discovery{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px}.discovery-card{background:#1b1820e8;border:1px solid var(--line);border-radius:16px;padding:19px}.discovery-card h3{margin:4px 0 12px;font-size:17px}.mini-item{border-top:1px solid var(--line);padding:9px 0;font-size:13px}.mini-item b{display:block}.mini-item small{color:var(--muted)}.memory-drift{position:fixed;inset:68px 0 0;z-index:0;overflow:hidden;pointer-events:none;opacity:.13}.memory-drift img{position:absolute;width:240px;height:170px;object-fit:cover;border-radius:18px;animation:drift 34s linear infinite}.memory-drift img:nth-child(2){top:18%;animation-delay:-11s}.memory-drift img:nth-child(3){top:61%;animation-delay:-23s}@keyframes drift{from{transform:translateX(-300px) rotate(-4deg)}to{transform:translateX(calc(100vw + 300px)) rotate(4deg)}}.wrap,.page,footer{position:relative;z-index:1}@media(max-width:650px){.home-discovery{grid-template-columns:1fr}.memory-drift img{width:180px;height:125px}}
 </style>
 </head>
 <body>
@@ -44,7 +45,7 @@ cursor:pointer
 <script>
 const REACTIONS=["❤️","😂","😭","🥹","👏","🫶","💀","✨","😮","🤍"];
 const API_BASE="/api";
-let state={confessions:[],memories:[],queue:[]};
+let state={confessions:[],memories:[],birthdays:[],queue:[]};
 let view="home",admin=false,loading=false;
 
 async function api(path,options={}){
@@ -65,12 +66,14 @@ function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&l
 async function loadData(){
   loading=true;
   try{
-    const [confessions,memories]=await Promise.all([
+    const [confessions,memories,birthdays]=await Promise.all([
       api("/confessions"),
-      api("/memories")
+      api("/memories"),
+      api("/birthdays").catch(()=>[])
     ]);
     state.confessions=(Array.isArray(confessions)?confessions:confessions.data||[]).map(normalizePost);
     state.memories=(Array.isArray(memories)?memories:memories.data||[]).map(normalizePost);
+    state.birthdays=Array.isArray(birthdays)?birthdays:[];
   }catch(err){
     console.error(err);
     state.confessions=[];
@@ -100,14 +103,17 @@ async function refreshCurrent(){
 }
 
 function nav(){return `<nav class="nav"><button class="brand" onclick="go('home')">commit <span>history</span></button><a class="admin" href="/admin.html">Admin</a></nav>`}
-function shell(c){document.querySelector("#app").innerHTML=nav()+c+`<footer>made for the moments worth keeping.</footer>`}
+function memoryDrift(){return `<div class="memory-drift">${state.memories.filter(x=>x.src).slice(0,3).map(x=>`<img src="${esc(x.src)}" alt="">`).join("")}</div>`}
+function shell(c){document.querySelector("#app").innerHTML=memoryDrift()+nav()+c+`<footer>made for the moments worth keeping.</footer>`}
 function go(v){view=v;render()}
 
 function render(){
   if(loading)return shell(`<main class="wrap"><div class="empty">Loading from Neon…</div></main>`);
-  if(view==="home")return shell(`<main class="wrap"><section class="hero"><div class="eyebrow">compscilog's shared archive</div><h1>commit<br>history</h1><div class="actions"><button class="btn primary" onclick="go('confessions')">View confessions</button><button class="btn" onclick="go('memories')">View memories</button><button class="btn" onclick="openModal('birthday')">Birthday tracker</button><button class="btn" onclick="openModal('feedback')">Give feedback</button><button class="btn" onclick="openModal('concern')">Serious concern</button><button class="btn" onclick="openModal('about')">Community standards</button></div></section></main>`);
+  if(view==="home")return shell(`<main class="wrap"><section class="hero"><div class="eyebrow">compscilog's shared archive</div><h1>commit<br>history</h1><div class="actions"><button class="btn primary" onclick="go('confessions')">View confessions</button><button class="btn" onclick="go('memories')">View memories</button><button class="btn" onclick="openModal('birthday')">Birthday tracker</button><button class="btn" onclick="openModal('feedback')">Give feedback</button><button class="btn" onclick="openModal('concern')">Serious concern</button><button class="btn" onclick="openModal('about')">Community standards</button></div></section>${homeDiscovery()}</main>`);
   renderFeed(view==="memories");
 }
+
+function homeDiscovery(){const now=new Date(),m=now.getMonth(),d=now.getDate();const upcoming=state.birthdays.map(x=>({...x,date:new Date(x.birthday)})).filter(x=>!Number.isNaN(x.date)).sort((a,b)=>((a.date.getMonth()-m+12)%12)*32+a.date.getDate()-d-(((b.date.getMonth()-m+12)%12)*32+b.date.getDate())).slice(0,4);const today=[...state.confessions,...state.memories].filter(x=>{const date=new Date(x.created_at);return date.getMonth()===m&&date.getDate()===d}).slice(0,3);return `<section class="home-discovery"><div class="discovery-card"><div class="eyebrow">coming up</div><h3>Upcoming birthdays</h3>${upcoming.length?upcoming.map(x=>`<div class="mini-item"><b>${esc(x.name)}</b><small>${x.date.toLocaleDateString(undefined,{month:"long",day:"numeric"})}</small></div>`).join(""):`<div class="mini-item"><small>No birthdays added yet.</small></div>`}<button class="btn" style="margin-top:12px" onclick="openModal('birthday')">View tracker</button></div><div class="discovery-card"><div class="eyebrow">from the archive</div><h3>On this day</h3>${today.length?today.map(x=>`<div class="mini-item"><b>${esc(x.alias)}</b><small>${esc((x.text||x.caption).slice(0,80))}</small></div>`).join(""):`<div class="mini-item"><small>No posts from this date yet — today could be the first.</small></div>`}</div></section>`}
 
 function renderFeed(mem){
   let items=state[mem?"memories":"confessions"].filter(x=>x.status==="approved");
@@ -248,7 +254,7 @@ async function submitPost(mem){
 if(localStorage.getItem("commit-history-admin")==="1")admin=true;
 loadData();
 // Keep new posts and reaction totals reasonably fresh without interrupting readers.
-setInterval(()=>loadData(),20000);
+setInterval(()=>{if(!document.hidden&&!document.querySelector(".modalback"))loadData()},8000);
 </script>
 </body>
 </html>
