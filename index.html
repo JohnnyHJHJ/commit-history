@@ -99,13 +99,13 @@ async function refreshCurrent(){
   await loadData();
 }
 
-function nav(){return `<nav class="nav"><button class="brand" onclick="go('home')">commit <span>history</span></button><button class="admin" onclick="openModal('admin')">Admin</button></nav>`}
+function nav(){return `<nav class="nav"><button class="brand" onclick="go('home')">commit <span>history</span></button><a class="admin" href="/admin.html">Admin</a></nav>`}
 function shell(c){document.querySelector("#app").innerHTML=nav()+c+`<footer>made for the moments worth keeping.</footer>`}
 function go(v){view=v;render()}
 
 function render(){
   if(loading)return shell(`<main class="wrap"><div class="empty">Loading from Neon…</div></main>`);
-  if(view==="home")return shell(`<main class="wrap"><section class="hero"><div class="eyebrow">compscilog's shared archive</div><h1>commit<br>history</h1><div class="actions"><button class="btn primary" onclick="go('confessions')">View confessions</button><button class="btn" onclick="go('memories')">View memories</button><button class="btn" onclick="openModal('feedback')">Give feedback</button><button class="btn" onclick="openModal('about')">Community standards</button></div></section></main>`);
+  if(view==="home")return shell(`<main class="wrap"><section class="hero"><div class="eyebrow">compscilog's shared archive</div><h1>commit<br>history</h1><div class="actions"><button class="btn primary" onclick="go('confessions')">View confessions</button><button class="btn" onclick="go('memories')">View memories</button><button class="btn" onclick="openModal('feedback')">Give feedback</button><button class="btn" onclick="openModal('concern')">Report a serious concern</button><button class="btn" onclick="openModal('about')">Community standards</button></div></section></main>`);
   renderFeed(view==="memories");
 }
 
@@ -117,9 +117,10 @@ function renderFeed(mem){
 
 function leader(items){return `<div class="leader">${items.slice(0,3).map((x,i)=>`<div class="rank"><img src="${esc(x.src)}" alt="Top memory"><div class="rankbody"><small>#${i+1} most reacted</small><strong>${esc(x.alias)}</strong><small>${total(x)} reactions</small></div></div>`).join("")}</div>`}
 
+function reacted(x,r){return localStorage.getItem(`reaction:${x.id}:${r}`)==="1"}
 function reactionSummary(x){
   return REACTIONS.filter(r=>Number(x.reactions?.[r]||0)>0)
-    .map(r=>`<span class="react">${r}${Number(x.reactions[r])}</span>`).join("");
+    .map(r=>`<button class="react ${reacted(x,r)?"active":""}" onclick="react('${esc(x.tag)}',this,'${r}')">${r}${Number(x.reactions[r])}</button>`).join("");
 }
 
 function post(x,mem){
@@ -142,16 +143,18 @@ async function react(tag,btn,r){
   if(!x)return;
 
   try{
+    const wasReacted=reacted(x,r);
     const result=await api("/reactions",{
       method:"POST",
       body:JSON.stringify({
         post_type:view==="memories"?"memory":"confession",
         post_id:x.id,
-        reaction:r
+        reaction:r, action:wasReacted?"remove":"add"
       })
     });
 
     x.reactions=result.reactions||{};
+    localStorage.setItem(`reaction:${x.id}:${r}`,wasReacted?"0":"1");
 
     const oldPost=btn.closest(".post");
     if(oldPost){
@@ -172,7 +175,7 @@ function openModal(type){
  let body="";
  if(type==="confession")body=`<h3>Post a confession</h3><div class="notice"><b>Commit History Community Standards</b><ol><li>Be kind and respectful. No discrimination, harassment, or hate speech.</li><li>Respect diverse opinions. Constructive criticism is welcome, but we do not tolerate attacks of any kind.</li><li>Keep discussions clean. No explicit, offensive, or NSFW content.</li><li>Don’t gossip. This is not a place to spread harmful rumors or baseless accusations.</li></ol>Before your confessions get posted, they will be screened by the batch representative and other relevant parties.</div><label>Alias / username</label><input id="alias" maxlength="40" placeholder="e.g. sleepdepriveddev"><label>Your confession</label><textarea id="text" maxlength="1200" placeholder="Say what you need to say…"></textarea><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitPost(false)">Submit for review</button></div>`;
  if(type==="memory")body=`<h3>Add a memory</h3><label>Alias</label><input id="alias" maxlength="40" placeholder="e.g. camera roll historian"><label>Image</label><div class="uploadbox"><input id="imageFile" type="file" accept="image/*" onchange="loadImageFile(event)"><label class="btn" for="imageFile">Choose an image</label><div class="uploadhint">Or copy an image and press Ctrl/Cmd + V here.</div><img id="imagePreview" class="preview" alt="Preview"></div><input id="src" type="hidden"><label>Caption</label><textarea id="text" maxlength="500" placeholder="What should we remember about this?"></textarea><div class="notice">Memories are reviewed before publication. Only upload images you have permission to share.</div><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitPost(true)">Submit memory</button></div>`;
- if(type==="feedback")body=`<h3>Give feedback</h3><p>Tell us what would make this better.</p><input id="alias" placeholder="Optional alias"><textarea id="text" maxlength="1000" placeholder="Your feedback…"></textarea><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="alert('Thanks! Your feedback was recorded.');closeModal()">Send feedback</button></div>`;
+ if(type==="feedback"||type==="concern")body=`<h3>${type==="concern"?"Report a serious concern":"Give feedback"}</h3><p>${type==="concern"?"Use this for urgent or serious batch concerns. Moderators will see it in the admin page.":"Tell us what would make this better."}</p><input id="alias" maxlength="40" placeholder="Optional alias"><textarea id="text" maxlength="2000" placeholder="Your message…"></textarea><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitFeedback(${type==="concern"})">Send</button></div>`;
  if(type==="about")body=`<h3>Commit History Community Standards</h3><p>We trust that our members are mature enough to understand the spirit of our Community Standards. Please take a moment to familiarize yourself with these guidelines to ensure a respectful and inclusive environment for everyone:</p><ol><li><b>Be kind and respectful.</b> No discrimination, harassment, or hate speech.</li><li><b>Respect diverse opinions.</b> Constructive criticism is welcome, but we do not tolerate attacks of any kind.</li><li><b>Keep discussions clean.</b> No explicit, offensive, or NSFW content.</li><li><b>Don’t gossip.</b> This is not a place to spread harmful rumors or baseless accusations.</li></ol><p>Before your confessions get posted, they will be screened by the batch representative and other relevant parties.</p><div class="modalfoot"><button class="btn primary" onclick="closeModal()">Got it</button></div>`;
  if(type==="admin")body=admin?adminPanel():`<h3>Admin access</h3><p>For batch representatives and authorized moderators only.</p><input id="login" placeholder="Username"><input id="password" type="password" placeholder="Password"><label class="remember"><input id="rememberMe" type="checkbox"> Remember me</label><div id="err" class="error"></div><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="login()">Sign in</button></div>`;
  document.body.insertAdjacentHTML("beforeend",`<div class="modalback" onclick="if(event.target===this)closeModal()"><div class="modal">${body}</div></div>`);
@@ -184,6 +187,8 @@ function adminPanel(){
 }
 
 function closeModal(){document.querySelector(".modalback")?.remove()}
+
+async function submitFeedback(concern){const message=document.querySelector("#text").value.trim();if(!message)return alert("Please add a message.");try{await api("/feedback",{method:"POST",body:JSON.stringify({name:document.querySelector("#alias").value.trim()||"anonymous",message,concern})});closeModal();alert("Thanks — your message was sent to the moderators.")}catch(err){alert("Your message could not be sent.")}}
 
 function login(){
   if(document.querySelector("#login").value==="batch2026commithistory"&&document.querySelector("#password").value==="password1234567"){
@@ -235,6 +240,8 @@ async function submitPost(mem){
 
 if(localStorage.getItem("commit-history-admin")==="1")admin=true;
 loadData();
+// Keep new posts and reaction totals reasonably fresh without interrupting readers.
+setInterval(()=>loadData(),20000);
 </script>
 </body>
 </html>

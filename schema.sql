@@ -20,6 +20,17 @@ CREATE TABLE IF NOT EXISTS memories (
     approved BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+-- Safe for existing databases created with older versions of the project.
+ALTER TABLE memories ADD COLUMN IF NOT EXISTS image_url TEXT;
+
+CREATE TABLE IF NOT EXISTS feedback (
+    id BIGSERIAL PRIMARY KEY,
+    name TEXT,
+    message TEXT NOT NULL,
+    concern BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS reactions (
     id BIGSERIAL PRIMARY KEY,
     post_type TEXT NOT NULL CHECK (post_type IN ('confession', 'memory')),
