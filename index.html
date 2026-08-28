@@ -1258,7 +1258,8 @@
         // ─── send inline reply ─────────────────────────────────────────────────
         async function sendInlineReply(e, kind, id) {
             if (e && e.preventDefault) e.preventDefault();
-            const form = e && e.currentTarget ? e.currentTarget : document.querySelector(`#replyForm_${id}`);
+            const target = e && e.currentTarget;
+            const form = target?.closest?.('.inline-reply-form') || document.querySelector(`#replyForm_${id}`);
             if (!form) return;
             const nameInput = form.querySelector('.reply-name');
             const msgInput = form.querySelector('.reply-msg');
