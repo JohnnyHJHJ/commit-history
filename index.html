@@ -1083,7 +1083,7 @@
             items = [...items].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
             const noun = mem ? 'memory' : 'confession';
-            const plural = pluralize(items.length, noun, noun + (noun === 'memory' ? 'ies' : 's'));
+            const plural = pluralize(items.length, noun, noun + (noun === 'Memor' ? 'ies' : 's'));
 
             shell(`
             <main class="page">
