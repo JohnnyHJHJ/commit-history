@@ -879,6 +879,8 @@
         .w-full { width: 100%; }
         .hidden { display: none !important; }
         .relative { position: relative; }
+        /* bulletin-board redesign */
+        body{background:#f8f1df;color:#111;font-family:Arial,Helvetica,sans-serif}.nav{height:72px;background:#a855f7;border-bottom:4px solid #111;backdrop-filter:none}.brand,.brand span{color:#111;font-family:Impact,"Arial Black",sans-serif;text-transform:uppercase;font-size:1.35rem}.nav-actions .admin-link{color:#111;border:3px solid #111;background:#f5ff81;border-radius:0;font-weight:900;text-transform:uppercase}.wrap{max-width:1220px}.btn,.card,.post,.toolbar input,.toolbar select{border:3px solid #111;border-radius:0;box-shadow:5px 5px 0 #111}.btn{background:#fff;color:#111;font-weight:900;text-transform:uppercase}.btn.primary{background:#a855f7;border-color:#111;color:#111}.btn:hover,.card:hover{transform:translate(3px,3px);box-shadow:2px 2px 0 #111}.btn:active{transform:translate(5px,5px);box-shadow:none}.card{background:#fff7ca}.home-grid{grid-template-columns:minmax(0,1.25fr) minmax(310px,.8fr);gap:28px}.bulletin{display:grid;grid-template-columns:1.25fr .8fr;gap:28px;align-items:start}.bulletin-brand{min-height:360px;background:#a855f7;border:4px solid #111;box-shadow:9px 9px 0 #111;padding:32px;position:relative;overflow:hidden}.bulletin-brand:after{content:'✳';position:absolute;color:#f5ff81;font-size:130px;right:-20px;bottom:-48px}.bulletin-brand p{max-width:470px;font-weight:800;font-size:1.08rem}.bulletin-brand h1{font-family:Impact,"Arial Black",sans-serif;color:#111;background:none;-webkit-text-fill-color:#111;font-size:clamp(3.5rem,9vw,7.6rem);text-transform:uppercase;line-height:.78;margin:12px 0 20px}.bulletin-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:500px}.bulletin-actions .btn:last-child{grid-column:span 2;background:#f5ff81}.quick-card{background:#0e0b8c;color:#fff;border:4px solid #111;box-shadow:8px 8px 0 #111;padding:18px}.quick-card h2{font-family:Impact,"Arial Black",sans-serif;text-transform:uppercase;font-size:1.8rem;font-weight:400;margin-bottom:13px}.quick-card .mini-item{border-color:#817cf3}.quick-card .mini-item small{color:#e3e2ff}.quick-card .btn{margin-top:15px;background:#ffacd6}.section-label{display:inline-block;background:#f5ff81;border:3px solid #111;padding:3px 10px;font-family:Impact,"Arial Black",sans-serif;text-transform:uppercase;font-size:1.15rem;transform:rotate(-2deg);margin-bottom:12px}.archive-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.archive-grid .card:nth-child(1){background:#ffb2c5}.archive-grid .card:nth-child(2){background:#aef2cf}.archive-grid .card:nth-child(3){background:#b7d9ff}.archive-grid .card:nth-child(4){background:#ffc078}.card h3,.pagehead h2{font-family:Impact,"Arial Black",sans-serif;text-transform:uppercase;font-weight:400}.announcement-item{border-color:#111}.announcement-item .body{color:#111}.announcement-item .meta{color:#4b3d55}.empty{border:3px dashed #111;color:#111;background:#fff;padding:20px}.post{border:3px solid #111;background:#fff7ca;box-shadow:5px 5px 0 #111}.post:hover{box-shadow:2px 2px 0 #111}.react,.reply-toggle{border:2px solid #111;border-radius:0;background:#fff;color:#111}.replies-wrap{background:#f1d2ff;border-left:5px solid #111;border-radius:0}.modal{border:4px solid #111;border-radius:0;box-shadow:10px 10px 0 #111;background:#fff7ca}@media(max-width:760px){.bulletin,.home-grid{grid-template-columns:1fr}.bulletin-brand{min-height:300px;padding:24px}.archive-grid{grid-template-columns:1fr}.bulletin-actions{grid-template-columns:1fr}.bulletin-actions .btn:last-child{grid-column:auto}}
     </style>
 </head>
 <body>
@@ -1050,59 +1052,7 @@
                 }).join('') :
                 `<div class="empty" style="padding:20px 0;border:none;">No tests added yet.</div>`;
 
-            shell(`
-            <main class="wrap">
-              <section class="hero">
-                <div class="eyebrow">compscilog's shared archive</div>
-                <h1>commit<br>history</h1>
-                <div class="actions">
-                  <button class="btn primary" onclick="go('confessions')">View confessions</button>
-                  <button class="btn" onclick="go('memories')">View memories</button>
-                  <button class="btn" onclick="openModal('birthday')">Birthday tracker</button>
-                  <button class="btn" onclick="openModal('feedback')">Give feedback</button>
-                  <button class="btn" onclick="openModal('concern')">Serious concern</button>
-                  <button class="btn" onclick="openModal('about')">Community standards</button>
-                </div>
-              </section>
-
-              <div class="home-grid">
-                <div class="home-main">
-                  <div class="card">
-                    <div class="eyebrow">coming up</div>
-                    <h3>Upcoming birthdays</h3>
-                    ${upcoming.length ? upcoming.map(x =>
-                      `<div class="mini-item"><b>${esc(x.name)}</b><small>${x.date.toLocaleDateString(undefined,{month:'long',day:'numeric'})}</small></div>`
-                    ).join('') :
-                    `<div class="mini-item"><small>No birthdays added yet.</small></div>`}
-                    <button class="btn small" style="margin-top:10px" onclick="openModal('birthday')">View tracker</button>
-                  </div>
-                  <div class="card">
-                    <div class="eyebrow">from the archive</div>
-                    <h3>On this day</h3>
-                    ${today.length ? today.map(x =>
-                      `<div class="mini-item"><b>${esc(x.alias)}</b><small>${esc((x.text||x.caption).slice(0,80))}</small></div>`
-                    ).join('') :
-                    `<div class="mini-item"><small>No posts from this date yet — today could be the first.</small></div>`}
-                  </div>
-                </div>
-
-                <div class="home-side">
-                  <div class="card">
-                    <div class="eyebrow">📢 announcements</div>
-                    <h3>What's new</h3>
-                    <div style="max-height:300px;overflow-y:auto;">${annHtml}</div>
-                    ${admin ? `<button class="btn small primary" style="margin-top:12px;width:100%" onclick="openModal('addAnnouncement')">+ Add announcement</button>` : ''}
-                  </div>
-                  <div class="card">
-                    <div class="eyebrow">📝 test tracker</div>
-                    <h3>Upcoming tests</h3>
-                    <div style="max-height:260px;overflow-y:auto;">${testsHtml}</div>
-                    ${admin ? `<button class="btn small primary" style="margin-top:12px;width:100%" onclick="openModal('addTest')">+ Add test</button>` : ''}
-                  </div>
-                </div>
-              </div>
-            </main>
-          `);
+            shell(`<main class="wrap"><section class="bulletin"><section class="bulletin-brand"><div class="eyebrow">A shared archive / batch 2026</div><h1>COMMIT<br>HISTORY</h1><p>Memories, confessions, and the tiny moments that make a community ours.</p><div class="bulletin-actions"><button class="btn primary" onclick="go('memories')">Share a memory</button><button class="btn" onclick="go('confessions')">Write a confession</button><button class="btn" onclick="openModal('about')">Community standards →</button></div></section><aside class="quick-card"><h2>Announcements</h2><div style="max-height:265px;overflow:auto">${annHtml}</div>${admin ? `<button class="btn small" onclick="openModal('addAnnouncement')">+ New announcement</button>` : ''}</aside></section><section class="home-grid" style="margin-top:32px"><div class="home-main"><span class="section-label">The archive</span><div class="archive-grid"><div class="card"><div class="eyebrow">Photo diary</div><h3>Memories</h3><p>${state.memories.length} approved snapshots from the people here.</p><button class="btn small" onclick="go('memories')">Open memories</button></div><div class="card"><div class="eyebrow">Say it</div><h3>Confessions</h3><p>${state.confessions.length} stories, thoughts, and little secrets.</p><button class="btn small" onclick="go('confessions')">Read confessions</button></div><div class="card"><div class="eyebrow">On this day</div><h3>Archive rewind</h3>${today.length ? today.map(x=>`<div class="mini-item"><b>${esc(x.alias)}</b><small>${esc((x.text||x.caption).slice(0,70))}</small></div>`).join('') : '<p>Nothing from this date yet. Leave a trace.</p>'}</div><div class="card"><div class="eyebrow">Coming up</div><h3>Birthdays</h3>${upcoming.length ? upcoming.map(x=>`<div class="mini-item"><b>${esc(x.name)}</b><small>${x.date.toLocaleDateString(undefined,{month:'long',day:'numeric'})}</small></div>`).join('') : '<p>No birthdays added yet.</p>'}<button class="btn small" onclick="openModal('birthday')">Birthday tracker</button></div></div></div><aside class="home-side"><div class="card"><div class="eyebrow">Test tracker</div><h3>Upcoming events</h3>${testsHtml}</div><div class="card"><div class="eyebrow">Got a thought?</div><h3>Community desk</h3><button class="btn small" onclick="openModal('feedback')">Give feedback</button> <button class="btn small" onclick="openModal('concern')">Serious concern</button></div></aside></section></main>`);
         }
 
         // ─── feed ───────────────────────────────────────────────────────────────
@@ -1453,15 +1403,11 @@
                     `
                 <h3>Admin access</h3>
                 <p>For batch representatives and authorized moderators only.</p>
-                <input id="login" placeholder="Username">
-                <input id="password" type="password" placeholder="Password">
-                <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-weight:400;color:var(--muted)">
-                  <input id="rememberMe" type="checkbox" style="width:auto;margin:0"> Remember me
-                </label>
+                <input id="password" type="password" placeholder="Admin key" autofocus>
                 <div id="err" class="error"></div>
                 <div class="modalfoot">
                   <button class="btn ghost" onclick="closeModal()">Cancel</button>
-                  <button class="btn primary" onclick="login()">Sign in</button>
+                  <button class="btn primary" onclick="login()">Enter admin</button>
                 </div>
               `;
             } else if (type === 'addAnnouncement') {
@@ -1541,23 +1487,9 @@
         }
 
         function login() {
-            const username = document.querySelector('#login')?.value || '';
             const password = document.querySelector('#password')?.value || '';
-            // For admin key we use the same password as before, but now we also set the key for API calls.
-            if (username === 'batch2026commithistory' && password === 'password1234567') {
-                admin = true;
-                adminKey = password; // simple, but we can also use a separate key
-                sessionStorage.setItem('commit-history-admin-key', adminKey);
-                if (document.querySelector('#rememberMe')?.checked) localStorage.setItem('commit-history-admin', '1');
-                else localStorage.removeItem('commit-history-admin');
-                closeModal();
-                setTimeout(() => openModal('admin'), 80);
-                // reload data to show admin controls
-                loadData();
-            } else {
-                const err = document.querySelector('#err');
-                if (err) err.textContent = 'Those credentials do not have administrator access.';
-            }
+            adminKey = password;
+            api('/admin').then(() => { admin = true; sessionStorage.setItem('commit-history-admin-key', adminKey); closeModal(); setTimeout(() => openModal('admin'), 80); loadData(); }).catch(() => { adminKey = ''; const err = document.querySelector('#err'); if (err) err.textContent = 'That admin key is not authorized.'; });
         }
 
         function signOut() {
@@ -1756,10 +1688,7 @@
         }
 
         // ─── init ──────────────────────────────────────────────────────────────
-        if (localStorage.getItem('commit-history-admin') === '1') {
-            admin = true;
-            adminKey = sessionStorage.getItem('commit-history-admin-key') || 'password1234567'; // fallback
-        }
+        adminKey = sessionStorage.getItem('commit-history-admin-key') || '';
         loadData();
 
         setInterval(() => {

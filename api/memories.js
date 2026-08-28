@@ -15,6 +15,7 @@ export default async function handler(req, res) {
         FROM memories m
         LEFT JOIN reactions r
           ON r.post_type = 'memory' AND r.post_id = m.id
+        WHERE m.approved = true
         GROUP BY m.id
         ORDER BY m.created_at DESC
       `;
@@ -56,14 +57,14 @@ export default async function handler(req, res) {
           ${name || "anonymous"},
           ${message},
           ${image_url},
-          true
+          false
         )
         RETURNING *
       `;
 
       return res.status(201).json({
         ...rows[0],
-        status: "approved"
+        status: "pending"
       });
     }
 

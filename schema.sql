@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS confessions (
     name TEXT,
     message TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    approved BOOLEAN NOT NULL DEFAULT TRUE
+    approved BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS memories (
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS memories (
     name TEXT,
     message TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    approved BOOLEAN NOT NULL DEFAULT TRUE
+    approved BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- Safe for existing databases created with older versions of the project.
@@ -67,8 +67,26 @@ CREATE TABLE IF NOT EXISTS replies (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS announcements (
+    id BIGSERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    body TEXT NOT NULL,
+    author TEXT NOT NULL DEFAULT 'Admin',
+    priority TEXT NOT NULL DEFAULT 'NORMAL' CHECK (priority IN ('NORMAL', 'IMPORTANT', 'URGENT')),
+    pinned BOOLEAN NOT NULL DEFAULT FALSE,
+    published BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS priority TEXT NOT NULL DEFAULT 'NORMAL';
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS published BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+
 CREATE INDEX IF NOT EXISTS idx_confessions_created_at
     ON confessions (created_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_memories_created_at
     ON memories (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_announcements_public ON announcements (pinned DESC, created_at DESC) WHERE published = TRUE;
+CREATE INDEX IF NOT EXISTS idx_replies_post ON replies (post_type, post_id, created_at);

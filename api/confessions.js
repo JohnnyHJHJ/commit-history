@@ -15,6 +15,7 @@ export default async function handler(req, res) {
         FROM confessions c
         LEFT JOIN reactions r
           ON r.post_type = 'confession' AND r.post_id = c.id
+        WHERE c.approved = true
         GROUP BY c.id
         ORDER BY c.created_at DESC
       `;
@@ -46,14 +47,14 @@ export default async function handler(req, res) {
           ${name || "anonymous"},
           ${message},
           ${image_url || null},
-          true
+          false
         )
         RETURNING *
       `;
 
       return res.status(201).json({
         ...rows[0],
-        status: "approved"
+        status: "pending"
       });
     }
 
