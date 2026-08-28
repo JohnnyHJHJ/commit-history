@@ -1,240 +1,1737 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Commit -m "History"</title>
-<meta name="description" content="A shared archive of memories, stories, and little moments.">
-<style>
-:root{--ink:#eeeaf2;--muted:#aaa2b3;--card:#1b1820;--line:#302b36;--purple:#9b6bd3;--purple-dark:#7f51b8;--lav:#292031;--danger:#e87583}
-*{box-sizing:border-box}
-body{margin:0;background:linear-gradient(#121016a8,#121016a8),url("/y2k%20bg2.png") center/cover fixed;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-button,input,textarea,select{font:inherit}button{cursor:pointer}
-.nav{height:68px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(22px,calc((100vw - 1080px)/2));position:sticky;top:0;background:#121016e8;backdrop-filter:blur(12px);z-index:10}
-.brand{border:0;background:none;font-weight:750;letter-spacing:-.04em;color:var(--ink)}.brand span,.eyebrow,.tag{color:var(--purple)}
-.admin{border:0;background:none;color:var(--muted);font-size:13px}
-.wrap{max-width:1080px;margin:auto;padding:40px 22px 70px}
-.hero{text-align:center;padding:70px 0 82px}.eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:11px;font-weight:800}
-.hero h1,.page h2,.modal h3{font-family:Georgia,"Times New Roman",serif}.hero h1{font-size:clamp(54px,9vw,92px);line-height:.92;letter-spacing:-.06em;margin:17px 0}
-.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.hero .actions{max-width:650px;margin:auto}.hero .actions .btn{min-width:145px}
-.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:12px 17px;border-radius:11px;font-weight:650;transition:.16s}.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px #3f274c12}.btn.primary{background:var(--purple);border-color:var(--purple);color:white}.btn.primary:hover{background:var(--purple-dark)}
-.page{max-width:900px;margin:auto;padding:30px 22px 70px}.back{border:0;background:none;color:var(--muted);padding:4px 0 18px}
-.pagehead{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:24px}.page h2{font-size:43px;letter-spacing:-.04em;margin:5px 0}.pagehead p{margin:0;color:var(--muted)}
-.feed{display:grid;gap:13px}.feed.grid{grid-template-columns:minmax(0,760px);gap:12px;justify-content:center}
-.feed.grid .post p{display:block;overflow:visible;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
-.feed.grid .posttop{margin-bottom:4px}
-.toolbar{display:flex;gap:8px;margin-bottom:14px}.toolbar input{flex:1}
-.toolbar input,.toolbar select,.modal input,.modal textarea{border:1px solid var(--line);background:#211e27;color:var(--ink);border-radius:10px;padding:10px 12px;outline:none}
-.post{border:1px solid var(--line);background:var(--card);border-radius:15px;overflow:hidden}.postbody{padding:18px}
-.posttop{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--muted)}.tag{font-weight:750}
-.post p{line-height:1.72;margin:13px 0 16px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;max-width:100%}
-.memory img{width:100%;display:block;height:auto;max-height:520px;object-fit:contain;background:#211e27}
-.reacts{display:flex;gap:5px;flex-wrap:wrap;position:relative}.react{border:1px solid var(--line);background:var(--card);color:#fff;border-radius:999px;padding:6px 9px;font-size:12px}.react.active{background:var(--lav);border-color:#d5c1e8}
-.reaction-menu{display:none;position:absolute;left:0;bottom:calc(100% + 5px);z-index:50;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px;box-shadow:0 12px 30px #0008;grid-template-columns:repeat(5,1fr);gap:2px;width:178px}.reaction-menu.open{display:grid}
-.react-choice{border:0;background:transparent;color:var(--ink);border-radius:7px;padding:5px 4px;font-size:13px}.react-choice:hover{background:var(--lav)}
-.replies{margin:0 0 16px;padding:12px 14px;border-left:2px solid var(--purple);background:#211e27;border-radius:0 10px 10px 0}
-.replies-title{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--purple);font-weight:800;margin-bottom:5px}
-.reply-item{padding:8px 0;border-top:1px solid var(--line)}.reply-item:first-of-type{border-top:0}.reply-item b{display:block;font-size:12px}.reply-item span{display:block;color:var(--muted);font-size:13px;line-height:1.55;margin-top:2px;white-space:pre-wrap;overflow-wrap:anywhere}
-.reply-empty,.reply-loading{color:var(--muted);font-size:12px}
-.inline-reply-form{display:flex;gap:7px;margin-top:10px}.inline-reply-form input,.inline-reply-form textarea{border:1px solid var(--line);background:#1b1820;color:var(--ink);border-radius:9px;padding:8px 10px;outline:none}.inline-reply-form input{width:120px}.inline-reply-form textarea{flex:1;min-height:38px;resize:vertical}.inline-reply-form button{white-space:nowrap}
-.leader{display:flex;gap:9px;overflow:auto;margin-bottom:17px}.rank{min-width:145px;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:13px}.rank img{width:100%;height:105px;object-fit:cover;display:block;background:var(--lav)}.rank small{display:block;color:var(--muted);font-size:11px}.rank strong{display:block;margin:4px 0}
-.modalback{position:fixed;inset:0;background:#21182788;display:flex;align-items:center;justify-content:center;padding:18px;z-index:30}.modal{width:min(650px,100%);max-height:91vh;overflow:auto;background:var(--card);border-radius:19px;padding:26px;box-shadow:0 25px 80px #21182733}.modal h3{font-size:28px;margin:0 0 15px}.modal p,.modal li{color:#aaa2b3;line-height:1.65}.modal label{display:block;font-size:13px;font-weight:700;margin-top:12px}.modal input,.modal textarea{width:100%;margin-top:6px}.modal textarea{min-height:145px;resize:vertical}
-.uploadbox{border:1px dashed #5a466e;background:#211c27;border-radius:12px;padding:18px;text-align:center;margin-top:7px}.uploadbox input{display:none}.uploadbox label{display:inline-block!important;margin:0!important}.preview{max-width:100%;max-height:260px;border-radius:12px;margin-top:12px;display:none}
-.notice{background:var(--lav);color:#c9b9d8;border-radius:12px;padding:14px;margin:15px 0;font-size:13px;line-height:1.55}.modalfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}.error{color:var(--danger);font-size:13px;margin-top:7px}
-.empty{text-align:center;padding:45px;border:1px dashed var(--line);border-radius:15px;color:var(--muted)}footer{text-align:center;color:#a09aa5;font-size:11px;padding:35px 20px 45px}
-.home-discovery{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px}.discovery-card{background:#1b1820e8;border:1px solid var(--line);border-radius:16px;padding:19px}.discovery-card h3{margin:4px 0 12px;font-size:17px}.mini-item{border-top:1px solid var(--line);padding:9px 0;font-size:13px}.mini-item b{display:block}.mini-item small{color:var(--muted)}
-.memory-drift{position:fixed;inset:68px 0 0;z-index:0;overflow:hidden;pointer-events:none;opacity:.13}.memory-drift img{position:absolute;width:240px;height:170px;object-fit:cover;border-radius:18px;animation:drift 34s linear infinite}.memory-drift img:nth-child(2){top:18%;animation-delay:-11s}.memory-drift img:nth-child(3){top:61%;animation-delay:-23s}
-@keyframes drift{from{transform:translateX(-300px) rotate(-4deg)}to{transform:translateX(calc(100vw + 300px)) rotate(4deg)}}.wrap,.page,footer{position:relative;z-index:1}
-@media(max-width:650px){.feed.grid{grid-template-columns:1fr}.pagehead{align-items:flex-start;flex-direction:column}.hero{padding:40px 0 55px}.wrap{padding-top:25px}.home-discovery{grid-template-columns:1fr}.memory-drift img{width:180px;height:125px}.inline-reply-form{flex-wrap:wrap}.inline-reply-form input{width:100%}.inline-reply-form textarea{min-width:0;width:100%}}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Commit -m "History"</title>
+    <meta name="description" content="A shared archive of memories, stories, and little moments." />
+    <style>
+        /* ── reset & variables ── */
+        :root {
+            --bg: #17121e;
+            --surface: #221d2b;
+            --surface-2: #2d2638;
+            --ink: #f0ebf5;
+            --muted: #b3aac2;
+            --line: #3d344b;
+            --purple: #b084e8;
+            --purple-dark: #9369d4;
+            --purple-glow: #7f51b855;
+            --amber: #f5c87a;
+            --amber-dim: #f5c87a22;
+            --rose: #f09b9b;
+            --card-radius: 18px;
+            --shadow: 0 12px 40px #0c0812aa;
+            --transition: 0.25s cubic-bezier(.22, .61, .36, 1);
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+        }
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+            min-height: 100vh;
+            padding-bottom: 1px;
+        }
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        a {
+            color: var(--purple);
+            text-decoration: none;
+        }
+        img {
+            display: block;
+            max-width: 100%;
+        }
 
-.adminstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:15px 0}
-.stat{border:1px solid var(--line);border-radius:12px;padding:12px;background:#211e27}
-.stat b{font-size:20px;display:block}
-.queueitem{border:1px solid var(--line);border-radius:14px;margin:10px 0;background:var(--card);overflow:hidden}
-.queueitem .qbody{padding:15px}
-.qmeta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}
-.qimg{width:100%;max-height:300px;object-fit:cover;display:block}
-.statuspill{font-size:11px;border-radius:999px;padding:4px 8px;background:var(--lav);color:var(--purple)}
+        /* ── scrollbar ── */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--line);
+            border-radius: 9px;
+        }
 
-</style>
+        /* ── nav ── */
+        .nav {
+            height: 64px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 max(18px, calc((100vw - 1080px)/2));
+            position: sticky;
+            top: 0;
+            background: #17121ee8;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            gap: 10px;
+        }
+        .brand {
+            font-weight: 750;
+            letter-spacing: -.04em;
+            font-size: 1.2rem;
+            color: var(--ink);
+            transition: color var(--transition);
+        }
+        .brand:hover {
+            color: var(--purple);
+        }
+        .brand span {
+            color: var(--purple);
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-actions .admin-link {
+            color: var(--muted);
+            font-size: 13px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: background var(--transition), color var(--transition);
+        }
+        .nav-actions .admin-link:hover {
+            background: var(--surface);
+            color: var(--ink);
+        }
+
+        /* ── layout ── */
+        .wrap {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 28px 18px 60px;
+            position: relative;
+            z-index: 1;
+        }
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px 18px 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── hero ── */
+        .hero {
+            text-align: center;
+            padding: 50px 0 60px;
+            position: relative;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, var(--purple-glow), transparent 70%);
+            opacity: .25;
+            pointer-events: none;
+        }
+        .hero>* {
+            position: relative;
+            z-index: 1;
+        }
+        .eyebrow {
+            text-transform: uppercase;
+            letter-spacing: .16em;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--purple);
+        }
+        .hero h1 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: clamp(48px, 10vw, 88px);
+            line-height: .92;
+            letter-spacing: -.06em;
+            margin: 14px 0 20px;
+            background: linear-gradient(135deg, #f0ebf5 30%, var(--purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero .sub {
+            color: var(--muted);
+            font-size: 1.05rem;
+            max-width: 520px;
+            margin: 0 auto 28px;
+        }
+
+        /* ── buttons ── */
+        .btn {
+            border: 1px solid var(--line);
+            background: var(--surface);
+            color: var(--ink);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: .9rem;
+            transition: background var(--transition), transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 44px;
+            user-select: none;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px #0c081244;
+            border-color: var(--purple);
+        }
+        .btn:active {
+            transform: scale(.97);
+        }
+        .btn.primary {
+            background: var(--purple);
+            border-color: var(--purple);
+            color: #0c0812;
+        }
+        .btn.primary:hover {
+            background: var(--purple-dark);
+            border-color: var(--purple-dark);
+            color: #0c0812;
+        }
+        .btn.ghost {
+            background: transparent;
+            border-color: transparent;
+        }
+        .btn.ghost:hover {
+            background: var(--surface);
+            border-color: var(--line);
+        }
+        .btn.small {
+            padding: 6px 12px;
+            font-size: .8rem;
+            min-height: 32px;
+            border-radius: 9px;
+        }
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .actions .btn {
+            min-width: 130px;
+        }
+
+        /* ── page header ── */
+        .pagehead {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+        .pagehead .left .eyebrow {
+            font-size: 10px;
+        }
+        .pagehead h2 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 2.2rem;
+            letter-spacing: -.04em;
+            margin: 2px 0 0;
+        }
+        .pagehead p {
+            color: var(--muted);
+            margin: 0;
+        }
+
+        /* ── toolbar ── */
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .toolbar input,
+        .toolbar select {
+            border: 1px solid var(--line);
+            background: var(--surface);
+            color: var(--ink);
+            border-radius: 10px;
+            padding: 8px 12px;
+            outline: none;
+            font-size: .9rem;
+            min-height: 42px;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        .toolbar input:focus,
+        .toolbar select:focus {
+            border-color: var(--purple);
+            box-shadow: 0 0 0 3px var(--purple-glow);
+        }
+        .toolbar input {
+            flex: 1;
+            min-width: 140px;
+        }
+        .toolbar select {
+            min-width: 110px;
+        }
+
+        /* ── feed ── */
+        .feed {
+            display: grid;
+            gap: 14px;
+        }
+        .feed.grid {
+            grid-template-columns: 1fr;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        /* ── post card ── */
+        .post {
+            border: 1px solid var(--line);
+            background: var(--surface);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        .post:hover {
+            border-color: #5a4a6e;
+            box-shadow: 0 4px 24px #0c081244;
+        }
+        .post .media {
+            width: 100%;
+            max-height: 420px;
+            object-fit: contain;
+            background: #1a1523;
+            display: block;
+        }
+        .postbody {
+            padding: 18px 20px 16px;
+        }
+        .posttop {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+        .posttop .tag {
+            font-weight: 700;
+            color: var(--purple);
+        }
+        .posttop .alias {
+            font-weight: 500;
+        }
+        .post p {
+            line-height: 1.72;
+            margin: 8px 0 14px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            font-size: .95rem;
+        }
+
+        /* ── reactions ── */
+        .reacts {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            align-items: center;
+            position: relative;
+        }
+        .react {
+            border: 1px solid var(--line);
+            background: var(--surface-2);
+            color: var(--ink);
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: .8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            transition: background var(--transition), border-color var(--transition), transform var(--transition);
+            min-height: 32px;
+        }
+        .react:hover {
+            background: var(--line);
+            transform: translateY(-1px);
+        }
+        .react.active {
+            background: #3d2b5a;
+            border-color: var(--purple);
+        }
+        .react .count {
+            color: var(--muted);
+            font-size: .7rem;
+            margin-left: 1px;
+        }
+        .reaction-menu {
+            display: none;
+            position: absolute;
+            left: 0;
+            bottom: calc(100% + 6px);
+            z-index: 30;
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: 0 12px 36px #0c0812cc;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 2px;
+            width: 180px;
+        }
+        .reaction-menu.open {
+            display: grid;
+        }
+        .react-choice {
+            border: 0;
+            background: transparent;
+            color: var(--ink);
+            border-radius: 7px;
+            padding: 4px 2px;
+            font-size: 1.1rem;
+            transition: background var(--transition);
+            min-height: 36px;
+        }
+        .react-choice:hover {
+            background: var(--line);
+        }
+
+        /* ── replies ── */
+        .replies-wrap {
+            margin: 14px 0 10px;
+            padding: 12px 14px 8px;
+            background: var(--surface-2);
+            border-radius: 12px;
+            border-left: 3px solid var(--purple);
+        }
+        .replies-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: var(--purple);
+            font-weight: 800;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .replies-title .count-badge {
+            background: var(--line);
+            color: var(--muted);
+            font-size: 9px;
+            padding: 0 8px;
+            border-radius: 99px;
+            font-weight: 600;
+        }
+        .reply-item {
+            padding: 6px 0;
+            border-top: 1px solid var(--line);
+            font-size: .88rem;
+        }
+        .reply-item:first-of-type {
+            border-top: 0;
+        }
+        .reply-item .rname {
+            font-weight: 600;
+            font-size: .78rem;
+            color: var(--purple);
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .reply-item .rmsg {
+            display: block;
+            color: #ddd6e6;
+            line-height: 1.5;
+            margin-top: 1px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            font-size: .9rem;
+        }
+        .reply-empty {
+            color: var(--muted);
+            font-size: .85rem;
+            padding: 4px 0;
+        }
+        .reply-loading {
+            color: var(--muted);
+            font-size: .8rem;
+        }
+
+        /* ── reply form (hidden by default, toggled) ── */
+        .inline-reply-form {
+            display: none;
+            gap: 8px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--line);
+            flex-wrap: wrap;
+            animation: slideDown .3s ease;
+        }
+        .inline-reply-form.open {
+            display: flex;
+        }
+        .inline-reply-form input,
+        .inline-reply-form textarea {
+            border: 1px solid var(--line);
+            background: var(--bg);
+            color: var(--ink);
+            border-radius: 9px;
+            padding: 7px 10px;
+            outline: none;
+            font-size: .85rem;
+            transition: border-color var(--transition), box-shadow var(--transition);
+            min-height: 38px;
+        }
+        .inline-reply-form input:focus,
+        .inline-reply-form textarea:focus {
+            border-color: var(--purple);
+            box-shadow: 0 0 0 3px var(--purple-glow);
+        }
+        .inline-reply-form input {
+            width: 120px;
+            flex-shrink: 0;
+        }
+        .inline-reply-form textarea {
+            flex: 1;
+            min-width: 140px;
+            resize: vertical;
+        }
+        .inline-reply-form .btn {
+            flex-shrink: 0;
+            min-height: 38px;
+            padding: 0 16px;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── reply toggle button ── */
+        .reply-toggle {
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--muted);
+            border-radius: 999px;
+            padding: 4px 12px;
+            font-size: .78rem;
+            transition: background var(--transition), color var(--transition), border-color var(--transition);
+            min-height: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .reply-toggle:hover {
+            background: var(--surface-2);
+            color: var(--ink);
+            border-color: var(--purple);
+        }
+        .reply-toggle .icon {
+            font-size: .9rem;
+        }
+
+        /* ── leaderboard ── */
+        .leader {
+            display: flex;
+            gap: 10px;
+            overflow: auto;
+            margin-bottom: 18px;
+            padding-bottom: 4px;
+        }
+        .rank {
+            min-width: 140px;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            border-radius: 14px;
+            padding: 12px 14px;
+            flex-shrink: 0;
+            transition: border-color var(--transition), transform var(--transition);
+        }
+        .rank:hover {
+            border-color: var(--purple);
+            transform: translateY(-2px);
+        }
+        .rank img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: var(--bg);
+        }
+        .rank small {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            margin-top: 4px;
+        }
+        .rank strong {
+            display: block;
+            font-size: .95rem;
+            margin: 2px 0;
+        }
+
+        /* ── discovery cards ── */
+        .home-discovery {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 12px;
+        }
+        .discovery-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--card-radius);
+            padding: 20px 22px 22px;
+            transition: border-color var(--transition), transform var(--transition);
+        }
+        .discovery-card:hover {
+            border-color: #5a4a6e;
+            transform: translateY(-2px);
+        }
+        .discovery-card .eyebrow {
+            font-size: 9px;
+        }
+        .discovery-card h3 {
+            font-size: 1.1rem;
+            margin: 4px 0 14px;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-weight: 400;
+        }
+        .mini-item {
+            border-top: 1px solid var(--line);
+            padding: 8px 0;
+            font-size: .85rem;
+        }
+        .mini-item:first-of-type {
+            border-top: 0;
+        }
+        .mini-item b {
+            display: block;
+            font-weight: 600;
+        }
+        .mini-item small {
+            color: var(--muted);
+            font-size: .78rem;
+        }
+
+        /* ── modal ── */
+        .modalback {
+            position: fixed;
+            inset: 0;
+            background: #0c0812cc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 50;
+            backdrop-filter: blur(4px);
+            animation: fadeIn .2s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .modal {
+            width: min(620px, 100%);
+            max-height: 90vh;
+            overflow: auto;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--card-radius);
+            padding: 26px 28px 28px;
+            box-shadow: 0 24px 72px #0c0812cc;
+            animation: slideUp .25s ease;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .modal h3 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 1.6rem;
+            margin: 0 0 6px;
+            letter-spacing: -.03em;
+        }
+        .modal p,
+        .modal li {
+            color: var(--muted);
+            line-height: 1.65;
+            font-size: .95rem;
+        }
+        .modal label {
+            display: block;
+            font-size: .8rem;
+            font-weight: 600;
+            margin-top: 14px;
+            color: var(--muted);
+        }
+        .modal input,
+        .modal textarea,
+        .modal select {
+            width: 100%;
+            margin-top: 4px;
+            border: 1px solid var(--line);
+            background: var(--bg);
+            color: var(--ink);
+            border-radius: 10px;
+            padding: 9px 12px;
+            outline: none;
+            font-size: .9rem;
+            transition: border-color var(--transition), box-shadow var(--transition);
+            min-height: 42px;
+        }
+        .modal input:focus,
+        .modal textarea:focus,
+        .modal select:focus {
+            border-color: var(--purple);
+            box-shadow: 0 0 0 3px var(--purple-glow);
+        }
+        .modal textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .modalfoot {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+        .notice {
+            background: #2d1f3a;
+            color: #d4c4e6;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            font-size: .85rem;
+            line-height: 1.55;
+            border-left: 3px solid var(--purple);
+        }
+        .error {
+            color: var(--rose);
+            font-size: .85rem;
+            margin-top: 6px;
+        }
+
+        /* ── upload box ── */
+        .uploadbox {
+            border: 1.5px dashed #5a466e;
+            background: #1a1523;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            margin-top: 4px;
+            transition: border-color var(--transition), background var(--transition);
+            cursor: pointer;
+        }
+        .uploadbox:hover {
+            border-color: var(--purple);
+            background: #221d2b;
+        }
+        .uploadbox input {
+            display: none;
+        }
+        .uploadbox label {
+            display: inline-block !important;
+            margin: 0 !important;
+            font-weight: 500 !important;
+            color: var(--purple);
+            cursor: pointer;
+        }
+        .preview {
+            max-width: 100%;
+            max-height: 240px;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* ── empty state ── */
+        .empty {
+            text-align: center;
+            padding: 40px 20px;
+            border: 1px dashed var(--line);
+            border-radius: var(--card-radius);
+            color: var(--muted);
+            font-size: .95rem;
+        }
+
+        /* ── birthday grid ── */
+        .bday-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 12px 0;
+        }
+        .bday-month {
+            border: 1px solid var(--line);
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+        .bday-month h4 {
+            font-size: .85rem;
+            color: var(--purple);
+            margin: 0 0 8px;
+            font-weight: 700;
+        }
+        .bday-entry {
+            display: grid;
+            grid-template-columns: 28px 1fr;
+            gap: 6px;
+            background: var(--surface-2);
+            border-radius: 8px;
+            padding: 6px 10px;
+            margin: 4px 0;
+            font-size: .85rem;
+        }
+        .bday-entry .day {
+            font-weight: 700;
+            color: var(--rose);
+        }
+        .bday-entry .name {
+            font-weight: 500;
+        }
+        .bday-entry .small {
+            color: var(--muted);
+            font-size: .7rem;
+            display: block;
+        }
+
+        /* ── footer ── */
+        footer {
+            text-align: center;
+            color: #6a6078;
+            font-size: 11px;
+            padding: 30px 18px 40px;
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--line);
+            margin-top: 20px;
+        }
+
+        /* ── memory drift ── */
+        .memory-drift {
+            position: fixed;
+            inset: 64px 0 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+            opacity: .08;
+        }
+        .memory-drift img {
+            position: absolute;
+            width: 200px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 16px;
+            animation: drift 38s linear infinite;
+            filter: saturate(.6);
+        }
+        .memory-drift img:nth-child(2) {
+            top: 18%;
+            animation-delay: -13s;
+        }
+        .memory-drift img:nth-child(3) {
+            top: 62%;
+            animation-delay: -25s;
+        }
+        @keyframes drift {
+            from {
+                transform: translateX(-280px) rotate(-3deg);
+            }
+            to {
+                transform: translateX(calc(100vw + 280px)) rotate(3deg);
+            }
+        }
+
+        /* ── mobile ── */
+        @media (max-width: 700px) {
+            .wrap {
+                padding: 16px 14px 40px;
+            }
+            .page {
+                padding: 10px 14px 40px;
+            }
+            .hero {
+                padding: 28px 0 36px;
+            }
+            .hero h1 {
+                font-size: clamp(36px, 12vw, 56px);
+            }
+            .hero .sub {
+                font-size: .92rem;
+            }
+            .pagehead {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .pagehead h2 {
+                font-size: 1.7rem;
+            }
+            .home-discovery {
+                grid-template-columns: 1fr;
+            }
+            .feed.grid {
+                grid-template-columns: 1fr;
+            }
+            .postbody {
+                padding: 14px 14px 12px;
+            }
+            .inline-reply-form input {
+                width: 100%;
+            }
+            .inline-reply-form textarea {
+                min-width: 0;
+                width: 100%;
+            }
+            .inline-reply-form {
+                flex-direction: column;
+            }
+            .inline-reply-form .btn {
+                align-self: flex-end;
+            }
+            .toolbar {
+                flex-wrap: wrap;
+            }
+            .toolbar input {
+                min-width: 100px;
+                flex: 1 1 140px;
+            }
+            .leader {
+                gap: 8px;
+            }
+            .rank {
+                min-width: 110px;
+                padding: 10px 12px;
+            }
+            .rank img {
+                height: 70px;
+            }
+            .modal {
+                padding: 20px 16px;
+            }
+            .reaction-menu {
+                width: 150px;
+                left: 0;
+                right: auto;
+            }
+            .reacts {
+                gap: 3px;
+            }
+            .react {
+                padding: 3px 8px;
+                font-size: .75rem;
+                min-height: 28px;
+            }
+            .nav {
+                padding: 0 14px;
+                height: 58px;
+            }
+            .brand {
+                font-size: 1rem;
+            }
+            .memory-drift img {
+                width: 120px;
+                height: 90px;
+            }
+            .bday-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 420px) {
+            .actions .btn {
+                min-width: 100%;
+                justify-content: center;
+            }
+            .bday-grid {
+                grid-template-columns: 1fr;
+            }
+            .pagehead .left .eyebrow {
+                font-size: 9px;
+            }
+        }
+
+        /* ── utilities ── */
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .gap-6 {
+            gap: 6px;
+        }
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .relative {
+            position: relative;
+        }
+    </style>
 </head>
 <body>
-<div id="app"></div>
-<script>
-const REACTIONS=["❤️","😂","😭","🥹","👏","🫶","💀","✨","😮","🤍"];
-const API_BASE="/api";
-let state={confessions:[],memories:[],birthdays:[],queue:[]};
-let view="home",admin=false,loading=false;
 
-async function api(path,options={}){
- const res=await fetch(API_BASE+path,{...options,headers:{"Content-Type":"application/json",...(options.headers||{})}});
- const text=await res.text();let data={};try{data=text?JSON.parse(text):{}}catch{data={raw:text}}
- if(!res.ok)throw new Error(data.error||`API error ${res.status}`);return data;
-}
-function total(x){return Object.values(x.reactions||{}).reduce((a,b)=>a+Number(b||0),0)}
-function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function normalizePost(x){return {...x,tag:x.tag||`#${x.id||""}`,alias:x.alias??x.name??"anonymous",text:x.text??x.message??x.caption??"",caption:x.caption??x.message??x.text??"",src:x.src??x.image_url??"",reactions:x.reactions||{},status:x.status||(x.approved===false?"pending":"approved")}}
+    <div id="app"></div>
 
-async function loadData(){
- loading=true;
- try{
-  const [confessions,memories,birthdays]=await Promise.all([api("/confessions"),api("/memories"),api("/birthdays").catch(()=>[])]);
-  state.confessions=(Array.isArray(confessions)?confessions:confessions.data||[]).map(normalizePost);
-  state.memories=(Array.isArray(memories)?memories:memories.data||[]).map(normalizePost);
-  state.birthdays=Array.isArray(birthdays)?birthdays:[];
- }catch(err){console.error(err);state.confessions=[];state.memories=[];alert("Could not connect to the backend. Check your Vercel API routes and Neon connection.")}
- finally{loading=false;render()}
-}
-function nav(){return `<nav class="nav"><button class="brand" onclick="go('home')">commit <span>history</span></button><a class="admin" href="/admin.html">Admin</a></nav>`}
-function memoryDrift(){return `<div class="memory-drift">${state.memories.filter(x=>x.src).slice(0,3).map(x=>`<img src="${esc(x.src)}" alt="">`).join("")}</div>`}
-function shell(c){document.querySelector("#app").innerHTML=memoryDrift()+nav()+c+`<footer>made for the moments worth keeping.</footer>`}
-function go(v){view=v;render()}
+    <script>
+        // ─── constants ──────────────────────────────────────────────────────────
+        const REACTIONS = ['❤️', '😂', '😭', '🥹', '👏', '🫶', '💀', '✨', '😮', '🤍'];
+        const API_BASE = '/api';
 
-function render(){
- if(loading)return shell(`<main class="wrap"><div class="empty">Loading from Neon...</div></main>`);
- if(view==="home")return shell(`<main class="wrap"><section class="hero"><div class="eyebrow">compscilog's shared archive</div><h1>commit<br>history</h1><div class="actions"><button class="btn primary" onclick="go('confessions')">View confessions</button><button class="btn" onclick="go('memories')">View memories</button><button class="btn" onclick="openModal('birthday')">Birthday tracker</button><button class="btn" onclick="openModal('feedback')">Give feedback</button><button class="btn" onclick="openModal('concern')">Serious concern</button><button class="btn" onclick="openModal('about')">Community standards</button></div></section>${homeDiscovery()}</main>`);
- renderFeed(view==="memories");
-}
-function homeDiscovery(){
- const now=new Date(),m=now.getMonth(),d=now.getDate();
- const upcoming=state.birthdays.map(x=>({...x,date:new Date(x.birthday)})).filter(x=>!Number.isNaN(x.date)).sort((a,b)=>((a.date.getMonth()-m+12)%12)*32+a.date.getDate()-d-(((b.date.getMonth()-m+12)%12)*32+b.date.getDate())).slice(0,4);
- const today=[...state.confessions,...state.memories].filter(x=>{const date=new Date(x.created_at);return date.getMonth()===m&&date.getDate()===d}).slice(0,3);
- return `<section class="home-discovery"><div class="discovery-card"><div class="eyebrow">coming up</div><h3>Upcoming birthdays</h3>${upcoming.length?upcoming.map(x=>`<div class="mini-item"><b>${esc(x.name)}</b><small>${x.date.toLocaleDateString(undefined,{month:"long",day:"numeric"})}</small></div>`).join(""):`<div class="mini-item"><small>No birthdays added yet.</small></div>`}<button class="btn" style="margin-top:12px" onclick="openModal('birthday')">View tracker</button></div><div class="discovery-card"><div class="eyebrow">from the archive</div><h3>On this day</h3>${today.length?today.map(x=>`<div class="mini-item"><b>${esc(x.alias)}</b><small>${esc((x.text||x.caption).slice(0,80))}</small></div>`).join(""):`<div class="mini-item"><small>No posts from this date yet - today could be the first.</small></div>`}</div></section>`;
-}
-function renderFeed(mem){
- let items=state[mem?"memories":"confessions"];items.sort((a,b)=>total(b)-total(a));
- shell(`<main class="page"><button class="back" onclick="go('home')">← Back home</button><div class="pagehead"><div><div class="eyebrow">${mem?"shared memories":"anonymous-ish thoughts"}</div><h2>${mem?"Memories":"Confessions"}</h2></div><button class="btn primary" onclick="openModal('${mem?"memory":"confession"}')">${mem?"Add a memory":"Post a confession"}</button></div>${mem?leader(items):""}<div class="toolbar"><input id="search" placeholder="Search..." oninput="filterPosts(this.value)"><select onchange="sortPosts(this.value)"><option value="popular">Most reacted</option><option value="new">Newest</option></select><button class="btn viewtoggle" onclick="toggleGrid()" id="gridBtn">List view</button></div><div id="feed" class="feed grid">${items.length?items.map(x=>post(x,mem)).join(""):`<div class="empty">Nothing here yet. Be the first to leave something behind.</div>`}</div></main>`);
- if(items.length&&!mem)loadInlineReplies("confession");
-}
-function leader(items){return `<div class="leader">${items.slice(0,3).map((x,i)=>`<div class="rank">${x.src?`<img src="${esc(x.src)}" alt="Top memory">`:""}<small>#${i+1} most reacted</small><strong>${esc(x.alias)}</strong><small>${total(x)} reactions</small></div>`).join("")}</div>`}
-function reacted(x,r){return localStorage.getItem(`reaction:${x.id}:${r}`)==="1"}
-function reactionSummary(x){return REACTIONS.filter(r=>Number(x.reactions?.[r]||0)>0).map(r=>`<button class="react ${reacted(x,r)?"active":""}" onclick="react('${esc(x.tag)}',this,'${r}')">${r}${Number(x.reactions[r])}</button>`).join("")}
+        // ─── state ──────────────────────────────────────────────────────────────
+        let state = { confessions: [], memories: [], birthdays: [], queue: [] };
+        let view = 'home';
+        let admin = false;
+        let loading = false;
 
-function post(x,mem){
- return `<article class="post ${mem?"memory":""}" data-id="${Number(x.id)}" data-kind="${mem?"memory":"confession"}" data-search="${esc((x.text||x.caption).toLowerCase())}">${x.src?`<img src="${esc(x.src)}" alt="Shared attachment">`:""}<div class="postbody"><div class="posttop"><span class="tag">${esc(x.tag)}</span><span>${esc(x.alias)}</span></div><p>${esc(x.text||x.caption)}</p>${mem?"":`<div class="replies" data-replies-for="${Number(x.id)}"><div class="replies-title">Replies</div><div class="reply-loading">Loading replies...</div></div>`}<div class="reacts">${reactionSummary(x)}<button class="react reaction-trigger" onclick="toggleReactionMenu(this)">React <span>${total(x)}</span></button>${mem?`<button class="react" onclick="openReplies('memory',${Number(x.id)})">Reply</button>`:`<button class="react" onclick="focusReply(${Number(x.id)})">Reply</button>`}<div class="reaction-menu">${REACTIONS.map(r=>`<button class="react-choice" onclick="react('${esc(x.tag)}',this,'${r}')">${r}</button>`).join("")}</div></div></div></article>`;
-}
-function toggleGrid(){const f=document.querySelector("#feed"),b=document.querySelector("#gridBtn");f.classList.toggle("grid");b.textContent=f.classList.contains("grid")?"List view":"Grid view"}
-function filterPosts(q){document.querySelectorAll(".post").forEach(p=>p.style.display=p.dataset.search.includes(q.toLowerCase())?"":"none")}
-function sortPosts(v){let mem=view==="memories",items=state[mem?"memories":"confessions"];if(v==="popular")items.sort((a,b)=>total(b)-total(a));if(v==="new")items.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));document.querySelector("#feed").innerHTML=items.map(x=>post(x,mem)).join("");if(!mem)loadInlineReplies("confession")}
-function toggleReactionMenu(btn){const menu=btn.parentElement.querySelector(".reaction-menu");document.querySelectorAll(".reaction-menu.open").forEach(m=>{if(m!==menu)m.classList.remove("open")});menu.classList.toggle("open")}
+        // ─── helpers ────────────────────────────────────────────────────────────
+        function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;',
+                '"': '&quot;', "'": '&#39;' }[c])); }
 
-async function loadInlineReplies(kind){
- const posts=[...document.querySelectorAll(`.post[data-kind="${kind}"]`)];
- await Promise.all(posts.map(async p=>{
-  const id=Number(p.dataset.id),box=p.querySelector(".replies");if(!box)return;
-  try{
-   const rows=await api(`/replies?post_type=${kind}&post_id=${id}`);
-   box.innerHTML=`<div class="replies-title">Replies</div>${rows.length?rows.map(r=>`<div class="reply-item"><b>${esc(r.name)}</b><span>${esc(r.message)}</span></div>`).join(""):`<div class="reply-empty">No replies yet.</div>`}<form class="inline-reply-form" onsubmit="sendInlineReply(event,'${kind}',${id})"><input name="name" maxlength="40" placeholder="Alias"><textarea name="message" maxlength="1000" placeholder="Write a reply..." required></textarea><button class="btn primary" type="submit">Reply</button></form>`;
-  }catch(err){box.innerHTML=`<div class="replies-title">Replies</div><div class="reply-empty">Replies could not be loaded.</div>`}
- }));
-}
-function focusReply(id){const box=document.querySelector(`.post[data-id="${id}"] .inline-reply-form textarea`);if(box){box.focus();box.scrollIntoView({behavior:"smooth",block:"center"})}}
-async function sendInlineReply(e,kind,id){
- e.preventDefault();const form=e.currentTarget,message=form.message.value.trim(),name=form.name.value.trim()||"anonymous";if(!message)return;
- try{await api("/replies",{method:"POST",body:JSON.stringify({post_type:kind,post_id:id,name,message})});form.reset();await loadInlineReplies(kind)}
- catch(err){alert(err.message||"Reply could not be posted.")}
-}
+        function total(x) { return Object.values(x.reactions || {}).reduce((a, b) => a + Number(b || 0), 0); }
 
-async function react(tag,btn,r){
- const arr=view==="memories"?state.memories:state.confessions,x=arr.find(y=>y.tag===tag);if(!x)return;
- try{
-  const wasReacted=reacted(x,r),result=await api("/reactions",{method:"POST",body:JSON.stringify({post_type:view==="memories"?"memory":"confession",post_id:x.id,reaction:r,action:wasReacted?"remove":"add",visitor_id:visitorId()})});
-  x.reactions=result.reactions||{};localStorage.setItem(`reaction:${x.id}:${r}`,wasReacted?"0":"1");
-  const oldPost=btn.closest(".post");if(oldPost){const temp=document.createElement("div");temp.innerHTML=post(x,view==="memories");oldPost.replaceWith(temp.firstElementChild);if(view!=="memories")loadInlineReplies("confession")}
- }catch(err){console.error(err);alert("Reaction could not be saved.")}
-}
-document.addEventListener("click",e=>{if(!e.target.closest(".reacts"))document.querySelectorAll(".reaction-menu.open").forEach(m=>m.classList.remove("open"))});
+        function normalizePost(x) {
+            return {
+                ...x,
+                tag: x.tag || `#${x.id || ''}`,
+                alias: x.alias ?? x.name ?? 'anonymous',
+                text: x.text ?? x.message ?? x.caption ?? '',
+                caption: x.caption ?? x.message ?? x.text ?? '',
+                src: x.src ?? x.image_url ?? '',
+                reactions: x.reactions || {},
+                status: x.status || (x.approved === false ? 'pending' : 'approved')
+            };
+        }
 
-function openModal(type){
- let body="";
- if(type==="confession")body=`<h3>Post a confession</h3><div class="notice">Posts are shared immediately. Be kind, avoid personal information, and remember that admins can remove harmful content.</div><label>Alias / username</label><input id="alias" maxlength="40" placeholder="e.g. sleepdepriveddev"><label>Image or GIF (optional)</label><div class="uploadbox"><input id="imageFile" type="file" accept="image/*" onchange="loadImageFile(event)"><label class="btn" for="imageFile">Choose an image or GIF</label><img id="imagePreview" class="preview" alt="Preview"></div><input id="src" type="hidden"><label>Your confession</label><textarea id="text" maxlength="1200" placeholder="Say what you need to say..."></textarea><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitPost(false)">Post confession</button></div>`;
- if(type==="memory")body=`<h3>Add a memory</h3><label>Alias</label><input id="alias" maxlength="40" placeholder="e.g. camera roll historian"><label>Image</label><div class="uploadbox"><input id="imageFile" type="file" accept="image/*" onchange="loadImageFile(event)"><label class="btn" for="imageFile">Choose an image</label><div style="font-size:12px;color:var(--muted);margin-top:7px">Or copy an image and press Ctrl/Cmd + V here.</div><img id="imagePreview" class="preview" alt="Preview"></div><input id="src" type="hidden"><label>Caption</label><textarea id="text" maxlength="500" placeholder="What should we remember about this?"></textarea><div class="notice">Memories are reviewed before publication. Only upload images you have permission to share.</div><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitPost(true)">Submit memory</button></div>`;
- if(type==="feedback"||type==="concern")body=`<h3>${type==="concern"?"Report a serious concern":"Give feedback"}</h3><p>${type==="concern"?"Use this for urgent or serious batch concerns. Moderators will see it in the admin page.":"Tell us what would make this better."}</p><input id="alias" maxlength="40" placeholder="Optional alias"><textarea id="text" maxlength="2000" placeholder="Your message..."></textarea><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="submitFeedback(${type==="concern"})">Send</button></div>`;
- if(type==="birthday")body=`<h3>Birthday tracker</h3><p>See upcoming birthdays and add yours if you'd like. Sharing is optional.</p><div id="birthdayList" class="empty">Loading birthdays...</div>${localStorage.getItem("birthday-opt-out")==="1"?`<div class="notice">You chose not to add a birthday.</div>`:localStorage.getItem("birthday-added")==="1"?`<div class="notice">Your birthday has already been added from this browser.</div>`:`<div id="birthdayForm"><label>Name</label><input id="birthdayName" maxlength="40" placeholder="Your name"><label>Birthday</label><input id="birthdayDate" type="date"><div class="modalfoot"><button class="btn" onclick="skipBirthday()">No thanks</button><button class="btn primary" onclick="submitBirthday()">Add birthday</button></div></div>`}<div class="modalfoot"><button class="btn" onclick="closeModal()">Close</button></div>`;
+        function visitorId() {
+            let id = localStorage.getItem('birthday-visitor');
+            if (!id) { id = crypto.randomUUID();
+                localStorage.setItem('birthday-visitor', id); }
+            return id;
+        }
 
- if(type==="admin")body=admin?adminPanel():`<h3>Admin access</h3><p>For batch representatives and authorized moderators only.</p><input id="login" placeholder="Username"><input id="password" type="password" placeholder="Password"><label class="remember"><input id="rememberMe" type="checkbox"> Remember me</label><div id="err" class="error"></div><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="login()">Sign in</button></div>`;
- if(type==="about")body=`<h3>Commit History Community Standards</h3><p>We trust that our members are mature enough to understand the spirit of our Community Standards. Please take a moment to familiarize yourself with these guidelines to ensure a respectful and inclusive environment for everyone:</p><ol><li><b>Be kind and respectful.</b> No discrimination, harassment, or hate speech.</li><li><b>Respect diverse opinions.</b> Constructive criticism is welcome, but we do not tolerate attacks of any kind.</li><li><b>Keep discussions clean.</b> No explicit, offensive, or NSFW content.</li><li><b>Don't gossip.</b> This is not a place to spread harmful rumors or baseless accusations.</li></ol><p>Before your confessions get posted, they will be screened by the batch representative and other relevant parties.</p><div class="modalfoot"><button class="btn primary" onclick="closeModal()">Got it</button></div>`;
- document.body.insertAdjacentHTML("beforeend",`<div class="modalback" onclick="if(event.target===this)closeModal()"><div class="modal">${body}</div></div>`);
- if(type==="birthday")loadBirthdays();
-}
+        function reacted(x, r) { return localStorage.getItem(`reaction:${x.id}:${r}`) === '1'; }
 
-function adminPanel(){
-  let q=state.queue;
-  return `<h3>Moderation queue</h3>
-  <p>${q.length?`There ${q.length===1?"is":"are"} ${q.length} submission${q.length===1?"":"s"} waiting for review.`:"The queue is clear."}</p>
-  ${q.map((x,i)=>`<div class="post" style="margin:12px 0">
-    <div class="postbody">
-      <div class="posttop">
-        <span class="tag">${esc(x.tag)}</span>
-        <span>${esc(x.kind)} · ${esc(x.alias)}</span>
-      </div>
-      ${x.src?`<img src="${esc(x.src)}" style="width:100%;margin:12px 0;border-radius:10px">`:""}
-      <p>${esc(x.text||x.caption)}</p>
-      <div class="modalfoot">
-        <button class="btn" onclick="moderate(${i},false)">Reject</button>
-        <button class="btn primary" onclick="moderate(${i},true)">Approve</button>
-      </div>
-    </div>
-  </div>`).join("")}
-  <div class="modalfoot">
-    <button class="btn" onclick="admin=false;closeModal()">Sign out</button>
-  </div>`;
-}
+        // ─── API ────────────────────────────────────────────────────────────────
+        async function api(path, options = {}) {
+            const res = await fetch(API_BASE + path, {
+                ...options,
+                headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
+            });
+            const text = await res.text();
+            let data = {};
+            try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
+            if (!res.ok) throw new Error(data.error || `API error ${res.status}`);
+            return data;
+        }
 
-function login(){
-  const username=document.querySelector("#login")?.value||"";
-  const password=document.querySelector("#password")?.value||"";
-  if(username==="batch2026commithistory"&&password==="password1234567"){
-    admin=true;
-    if(document.querySelector("#rememberMe")?.checked)localStorage.setItem("commit-history-admin","1");
-    else localStorage.removeItem("commit-history-admin");
-    closeModal();
-    setTimeout(()=>openModal("admin"),80);
-  }else{
-    const err=document.querySelector("#err");
-    if(err)err.textContent="Those credentials do not have administrator access.";
-  }
-}
+        // ─── load data ──────────────────────────────────────────────────────────
+        async function loadData() {
+            loading = true;
+            try {
+                const [confessions, memories, birthdays] = await Promise.all([
+                    api('/confessions'),
+                    api('/memories'),
+                    api('/birthdays').catch(() => [])
+                ]);
+                state.confessions = (Array.isArray(confessions) ? confessions : confessions.data || []).map(normalizePost);
+                state.memories = (Array.isArray(memories) ? memories : memories.data || []).map(normalizePost);
+                state.birthdays = Array.isArray(birthdays) ? birthdays : [];
+            } catch (err) {
+                console.error(err);
+                state.confessions = [];
+                state.memories = [];
+                alert('Could not connect to the backend. Check your Vercel API routes and Neon connection.');
+            } finally {
+                loading = false;
+                render();
+            }
+        }
 
-function moderate(i,approve){
-  alert("Moderation is not connected to the API yet. The public posts and reactions are connected to Neon.");
-}
+        // ─── render ─────────────────────────────────────────────────────────────
+        function render() {
+            if (loading) return shell(`<main class="wrap"><div class="empty">Loading from Neon…</div></main>`);
+            if (view === 'home') return renderHome();
+            renderFeed(view === 'memories');
+        }
 
-function closeModal(){document.querySelector(".modalback")?.remove()}
+        function shell(inner) {
+            const drift = state.memories.filter(x => x.src).slice(0, 3).map(x =>
+                `<img src="${esc(x.src)}" alt="" loading="lazy">`
+            ).join('');
+            document.querySelector('#app').innerHTML = `
+            <div class="memory-drift">${drift}</div>
+            <nav class="nav">
+              <button class="brand" onclick="go('home')">commit <span>history</span></button>
+              <div class="nav-actions">
+                <a class="admin-link" href="/admin.html">Admin</a>
+              </div>
+            </nav>
+            ${inner}
+            <footer>made for the moments worth keeping.</footer>
+          `;
+        }
 
-async function openReplies(kind,id){
- openModal("about");document.querySelector(".modal").innerHTML=`<h3>Replies</h3><div id="replyList" class="empty">Loading replies...</div><label>Alias (optional)</label><input id="replyAlias" maxlength="40" placeholder="anonymous"><label>Your reply</label><textarea id="replyText" maxlength="1000" placeholder="Leave a supportive reply..."></textarea><div class="modalfoot"><button class="btn" onclick="closeModal()">Close</button><button class="btn primary" onclick="sendReply('${kind}',${id})">Reply</button></div>`;
- try{const rows=await api(`/replies?post_type=${kind}&post_id=${id}`);document.querySelector("#replyList").innerHTML=rows.length?rows.map(r=>`<div class="mini-item"><b>${esc(r.name)}</b><small>${esc(r.message)}</small></div>`).join(""):`<div class="empty">No replies yet. Start the conversation.</div>`}catch(err){document.querySelector("#replyList").textContent=`Replies could not be loaded: ${err.message}`}
-}
-async function sendReply(kind,id){const message=document.querySelector("#replyText").value.trim();if(!message)return alert("Please write a reply.");try{await api("/replies",{method:"POST",body:JSON.stringify({post_type:kind,post_id:id,name:document.querySelector("#replyAlias").value.trim()||"anonymous",message})});closeModal();openReplies(kind,id)}catch(err){alert(err.message||"Reply could not be posted.")}}
-async function submitFeedback(concern){const message=document.querySelector("#text").value.trim();if(!message)return alert("Please add a message.");try{await api("/feedback",{method:"POST",body:JSON.stringify({name:document.querySelector("#alias").value.trim()||"anonymous",message,concern})});closeModal();alert("Thanks - your message was sent to the moderators.")}catch(err){alert("Your message could not be sent.")}}
-function visitorId(){let id=localStorage.getItem("birthday-visitor");if(!id){id=crypto.randomUUID();localStorage.setItem("birthday-visitor",id)}return id}
+        function go(v) { view = v;
+            render(); }
 
-async function loadBirthdays(){
- try{
-  const rows=await api("/birthdays"),list=document.querySelector("#birthdayList");if(!list)return;
-  list.style.cssText="display:grid;grid-template-columns:repeat(3,minmax(145px,1fr));gap:12px;background:transparent;padding:0";
-  const months=Array.from({length:12},(_,i)=>({name:new Date(2026,i).toLocaleDateString(undefined,{month:"long"}),rows:[]}));
-  rows.forEach(x=>months[new Date(x.birthday).getMonth()].rows.push(x));
-  list.innerHTML=months.map(m=>`<section style="border:1px solid #302b36;background:#121a29;border-radius:14px;padding:13px;min-height:150px"><b style="display:block;margin-bottom:9px">${m.name}</b>${m.rows.length?m.rows.map(x=>`<div style="display:grid;grid-template-columns:32px 1fr;gap:7px;background:#1b2638;border-radius:8px;padding:8px;margin:6px 0"><strong style="color:#ff96ac">${new Date(x.birthday).getDate()}</strong><span>${esc(x.name)}<small style="display:block;color:#aaa2b3">birthday</small></span></div>`).join(""):`<small style="color:#aaa2b3">No birthdays yet</small>`}</section>`).join("");
- }catch(err){const list=document.querySelector("#birthdayList");if(list)list.textContent=`Birthdays could not be loaded: ${err.message||"unknown error"}`}
-}
-function skipBirthday(){localStorage.setItem("birthday-opt-out","1");closeModal();openModal("birthday")}
-async function submitBirthday(){const name=document.querySelector("#birthdayName").value.trim(),birthday=document.querySelector("#birthdayDate").value;if(!name||!birthday)return alert("Please add your name and birthday.");try{await api("/birthdays",{method:"POST",body:JSON.stringify({name,birthday,visitor_id:visitorId()})});localStorage.setItem("birthday-added","1");document.querySelector("#birthdayForm").remove();await loadBirthdays()}catch(err){alert(err.message||"Birthday could not be saved.")}}
+        // ─── home ──────────────────────────────────────────────────────────────
+        function renderHome() {
+            const now = new Date(),
+                m = now.getMonth(),
+                d = now.getDate();
+            const upcoming = state.birthdays.map(x => ({ ...x, date: new Date(x.birthday) }))
+                .filter(x => !Number.isNaN(x.date))
+                .sort((a, b) => ((a.date.getMonth() - m + 12) % 12) * 32 + a.date.getDate() - d -
+                    (((b.date.getMonth() - m + 12) % 12) * 32 + b.date.getDate()))
+                .slice(0, 4);
+            const today = [...state.confessions, ...state.memories]
+                .filter(x => { const dt = new Date(x.created_at); return dt.getMonth() === m && dt.getDate() === d; })
+                .slice(0, 3);
 
-function loadImageFile(e){const file=e.target.files?.[0];if(file)readImage(file)}
-function readImage(file){if(!file.type.startsWith("image/"))return;const r=new FileReader();r.onload=()=>{document.querySelector("#src").value=r.result;const p=document.querySelector("#imagePreview");p.src=r.result;p.style.display="block"};r.readAsDataURL(file)}
-document.addEventListener("paste",e=>{if(!document.querySelector(".modalback")||!document.querySelector("#imagePreview"))return;const item=[...(e.clipboardData?.items||[])].find(x=>x.type.startsWith("image/"));if(item){e.preventDefault();readImage(item.getAsFile())}})
+            shell(`
+            <main class="wrap">
+              <section class="hero">
+                <div class="eyebrow">compscilog's shared archive</div>
+                <h1>commit<br>history</h1>
+                <p class="sub">A quiet place for confessions, memories, and the moments that shape us.</p>
+                <div class="actions">
+                  <button class="btn primary" onclick="go('confessions')">View confessions</button>
+                  <button class="btn" onclick="go('memories')">View memories</button>
+                  <button class="btn" onclick="openModal('birthday')">Birthday tracker</button>
+                  <button class="btn" onclick="openModal('feedback')">Give feedback</button>
+                  <button class="btn" onclick="openModal('concern')">Serious concern</button>
+                  <button class="btn" onclick="openModal('about')">Community standards</button>
+                </div>
+              </section>
+              <section class="home-discovery">
+                <div class="discovery-card">
+                  <div class="eyebrow">coming up</div>
+                  <h3>Upcoming birthdays</h3>
+                  ${upcoming.length ? upcoming.map(x =>
+                    `<div class="mini-item"><b>${esc(x.name)}</b><small>${x.date.toLocaleDateString(undefined,{month:'long',day:'numeric'})}</small></div>`
+                  ).join('') :
+                  `<div class="mini-item"><small>No birthdays added yet.</small></div>`}
+                  <button class="btn small" style="margin-top:10px" onclick="openModal('birthday')">View tracker</button>
+                </div>
+                <div class="discovery-card">
+                  <div class="eyebrow">from the archive</div>
+                  <h3>On this day</h3>
+                  ${today.length ? today.map(x =>
+                    `<div class="mini-item"><b>${esc(x.alias)}</b><small>${esc((x.text||x.caption).slice(0,80))}</small></div>`
+                  ).join('') :
+                  `<div class="mini-item"><small>No posts from this date yet — today could be the first.</small></div>`}
+                </div>
+              </section>
+            </main>
+          `);
+        }
 
-async function submitPost(mem){
- let alias=(document.querySelector("#alias").value.trim()||"anonymous").slice(0,40),text=document.querySelector("#text").value.trim();if(!text)return alert("Please add some text.");
- let payload={name:alias,alias,message:text,text,caption:mem?text:undefined,src:document.querySelector("#src")?.value.trim()||undefined,image_url:document.querySelector("#src")?.value.trim()||undefined};
- if(mem&&!payload.src)return alert("Please choose or paste an image.");
- try{await api(mem?"/memories":"/confessions",{method:"POST",body:JSON.stringify(payload)});closeModal();alert(mem?"Memory posted.":"Confession posted.");await loadData()}catch(err){console.error(err);alert("Submission failed. Check your backend API.")}
-}
-if(localStorage.getItem("commit-history-admin")==="1")admin=true;
-loadData();
-setInterval(()=>{if(!document.hidden&&!document.querySelector(".modalback"))loadData()},30000);
-</script>
+        // ─── feed ───────────────────────────────────────────────────────────────
+        function renderFeed(mem) {
+            let items = state[mem ? 'memories' : 'confessions'];
+            // default: newest first
+            items = [...items].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+            shell(`
+            <main class="page">
+              <button class="btn ghost small" onclick="go('home')" style="margin-bottom:10px">← Back home</button>
+              <div class="pagehead">
+                <div class="left">
+                  <div class="eyebrow">${mem ? 'shared memories' : 'anonymous-ish thoughts'}</div>
+                  <h2>${mem ? 'Memories' : 'Confessions'}</h2>
+                  <p>${items.length} ${mem ? 'memory' : 'confession'}${items.length !== 1 ? 's' : ''}</p>
+                </div>
+                <button class="btn primary" onclick="openModal('${mem?'memory':'confession'}')">${mem ? 'Add a memory' : 'Post a confession'}</button>
+              </div>
+              ${mem ? leader(items) : ''}
+              <div class="toolbar">
+                <input id="search" placeholder="Search…" oninput="filterPosts(this.value)">
+                <select id="sortSelect" onchange="sortPosts(this.value)">
+                  <option value="newest" selected>Newest first</option>
+                  <option value="popular">Most reacted</option>
+                </select>
+                <button class="btn small viewtoggle" onclick="toggleGrid()" id="gridBtn">List view</button>
+              </div>
+              <div id="feed" class="feed grid">
+                ${items.length ? items.map(x => post(x, mem)).join('') :
+                `<div class="empty">Nothing here yet. Be the first to leave something behind.</div>`}
+              </div>
+            </main>
+          `);
+            if (items.length && !mem) loadInlineReplies('confession');
+            // wire up sort select to match default
+            const sel = document.getElementById('sortSelect');
+            if (sel) sel.value = 'newest';
+        }
+
+        function leader(items) {
+            const top = [...items].sort((a, b) => total(b) - total(a)).slice(0, 3);
+            return `<div class="leader">${top.map((x,i) =>
+            `<div class="rank">${x.src ? `<img src="${esc(x.src)}" alt="Top memory" loading="lazy">` : ''}
+              <small>#${i+1} most reacted</small>
+              <strong>${esc(x.alias)}</strong>
+              <small>${total(x)} reactions</small>
+            </div>`
+          ).join('')}</div>`;
+        }
+
+        // ─── post card ──────────────────────────────────────────────────────────
+        function post(x, mem) {
+            const replyCount = 0; // we'll fill this later
+            return `
+            <article class="post" data-id="${Number(x.id)}" data-kind="${mem?'memory':'confession'}" data-search="${esc((x.text||x.caption).toLowerCase())}">
+              ${x.src ? `<img class="media" src="${esc(x.src)}" alt="Shared attachment" loading="lazy">` : ''}
+              <div class="postbody">
+                <div class="posttop">
+                  <span class="tag">${esc(x.tag)}</span>
+                  <span class="alias">${esc(x.alias)}</span>
+                </div>
+                <p>${esc(x.text || x.caption)}</p>
+                ${mem ? '' : `<div class="replies-wrap" data-replies-for="${Number(x.id)}">
+                  <div class="replies-title">Replies <span class="count-badge" id="replyCount_${x.id}">…</span></div>
+                  <div class="reply-loading">Loading replies…</div>
+                </div>`}
+                <div class="reacts">
+                  ${REACTIONS.filter(r => Number(x.reactions?.[r]||0) > 0).map(r =>
+                    `<button class="react ${reacted(x,r)?'active':''}" onclick="react('${esc(x.tag)}',this,'${r}')">${r} <span class="count">${Number(x.reactions[r])}</span></button>`
+                  ).join('')}
+                  <button class="react reaction-trigger" onclick="toggleReactionMenu(this)">➕ <span class="count">${total(x)}</span></button>
+                  <button class="react reply-toggle" onclick="toggleReplyForm(this, ${Number(x.id)})">
+                    <span class="icon">💬</span> Reply
+                  </button>
+                  <div class="reaction-menu">
+                    ${REACTIONS.map(r => `<button class="react-choice" onclick="react('${esc(x.tag)}',this,'${r}')">${r}</button>`).join('')}
+                  </div>
+                </div>
+                ${mem ? '' : `
+                  <div class="inline-reply-form" id="replyForm_${x.id}">
+                    <input name="name" maxlength="40" placeholder="Alias" class="reply-name">
+                    <textarea name="message" maxlength="1000" placeholder="Write a reply…" class="reply-msg" required></textarea>
+                    <button class="btn primary small" onclick="sendInlineReply(event,'confession',${Number(x.id)})">Reply</button>
+                  </div>
+                `}
+              </div>
+            </article>
+          `;
+        }
+
+        // ─── reply toggle ──────────────────────────────────────────────────────
+        function toggleReplyForm(btn, id) {
+            const form = document.getElementById(`replyForm_${id}`);
+            if (!form) return;
+            const isOpen = form.classList.contains('open');
+            // close all others
+            document.querySelectorAll('.inline-reply-form.open').forEach(f => { if (f !== form) f.classList.remove('open'); });
+            form.classList.toggle('open');
+            if (!isOpen) {
+                const ta = form.querySelector('.reply-msg');
+                if (ta) setTimeout(() => ta.focus(), 100);
+            }
+        }
+
+        // ─── load inline replies ──────────────────────────────────────────────
+        async function loadInlineReplies(kind) {
+            const posts = [...document.querySelectorAll(`.post[data-kind="${kind}"]`)];
+            await Promise.all(posts.map(async p => {
+                const id = Number(p.dataset.id);
+                const box = p.querySelector('.replies-wrap');
+                if (!box) return;
+                const countEl = box.querySelector('.count-badge');
+                try {
+                    const rows = await api(`/replies?post_type=${kind}&post_id=${id}`);
+                    const count = rows.length;
+                    if (countEl) countEl.textContent = count;
+                    const listHtml = rows.length ?
+                        rows.map(r =>
+                            `<div class="reply-item"><span class="rname">${esc(r.name)}</span><span class="rmsg">${esc(r.message)}</span></div>`
+                        ).join('') :
+                        `<div class="reply-empty">No replies yet.</div>`;
+                    box.innerHTML = `
+                <div class="replies-title">Replies <span class="count-badge">${count}</span></div>
+                ${listHtml}
+              `;
+                    // re-attach the form that was replaced
+                    const form = p.querySelector('.inline-reply-form');
+                    if (form) box.appendChild(form);
+                    // re-bind the form's submit
+                    const oldForm = box.querySelector('.inline-reply-form');
+                    if (oldForm) {
+                        oldForm.querySelector('.reply-msg')?.addEventListener('keydown', e => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                sendInlineReply(e, kind, id);
+                            }
+                        });
+                    }
+                } catch (err) {
+                    box.innerHTML =
+                    `<div class="replies-title">Replies</div><div class="reply-empty">Could not load replies.</div>`;
+                }
+            }));
+        }
+
+        // ─── send inline reply ─────────────────────────────────────────────────
+        async function sendInlineReply(e, kind, id) {
+            if (e && e.preventDefault) e.preventDefault();
+            const form = e && e.currentTarget ? e.currentTarget : document.querySelector(`#replyForm_${id}`);
+            if (!form) return;
+            const nameInput = form.querySelector('.reply-name');
+            const msgInput = form.querySelector('.reply-msg');
+            const message = msgInput?.value?.trim() || '';
+            const name = nameInput?.value?.trim() || 'anonymous';
+            if (!message) return;
+
+            try {
+                await api('/replies', {
+                    method: 'POST',
+                    body: JSON.stringify({ post_type: kind, post_id: id, name, message })
+                });
+                if (msgInput) msgInput.value = '';
+                if (nameInput) nameInput.value = '';
+                form.classList.remove('open');
+                await loadInlineReplies(kind);
+            } catch (err) {
+                alert(err.message || 'Reply could not be posted.');
+            }
+        }
+
+        // ─── reactions ──────────────────────────────────────────────────────────
+        async function react(tag, btn, r) {
+            const arr = view === 'memories' ? state.memories : state.confessions;
+            const x = arr.find(y => y.tag === tag);
+            if (!x) return;
+            try {
+                const was = reacted(x, r);
+                const result = await api('/reactions', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        post_type: view === 'memories' ? 'memory' : 'confession',
+                        post_id: x.id,
+                        reaction: r,
+                        action: was ? 'remove' : 'add',
+                        visitor_id: visitorId()
+                    })
+                });
+                x.reactions = result.reactions || {};
+                localStorage.setItem(`reaction:${x.id}:${r}`, was ? '0' : '1');
+                // re-render just this post
+                const old = btn.closest('.post');
+                if (old) {
+                    const temp = document.createElement('div');
+                    temp.innerHTML = post(x, view === 'memories');
+                    const fresh = temp.firstElementChild;
+                    // preserve reply form state
+                    const oldForm = old.querySelector('.inline-reply-form');
+                    const newForm = fresh?.querySelector('.inline-reply-form');
+                    if (oldForm && newForm) {
+                        const wasOpen = oldForm.classList.contains('open');
+                        if (wasOpen) newForm.classList.add('open');
+                    }
+                    old.replaceWith(fresh);
+                    // re-load replies for this post
+                    if (view !== 'memories') loadInlineReplies('confession');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Reaction could not be saved.');
+            }
+        }
+
+        function toggleReactionMenu(btn) {
+            const menu = btn.parentElement.querySelector('.reaction-menu');
+            document.querySelectorAll('.reaction-menu.open').forEach(m => { if (m !== menu) m.classList.remove('open'); });
+            menu.classList.toggle('open');
+        }
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.reacts')) {
+                document.querySelectorAll('.reaction-menu.open').forEach(m => m.classList.remove('open'));
+            }
+        });
+
+        // ─── filter / sort ──────────────────────────────────────────────────────
+        function filterPosts(q) {
+            const term = q.toLowerCase();
+            document.querySelectorAll('.post').forEach(p => {
+                p.style.display = p.dataset.search.includes(term) ? '' : 'none';
+            });
+        }
+
+        function sortPosts(v) {
+            const mem = view === 'memories';
+            let items = state[mem ? 'memories' : 'confessions'];
+            if (v === 'popular') items = [...items].sort((a, b) => total(b) - total(a));
+            else items = [...items].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+            const feed = document.querySelector('#feed');
+            if (feed) {
+                feed.innerHTML = items.map(x => post(x, mem)).join('');
+                if (!mem) loadInlineReplies('confession');
+                // re-apply filter
+                const search = document.getElementById('search');
+                if (search && search.value) filterPosts(search.value);
+            }
+        }
+
+        function toggleGrid() {
+            const f = document.querySelector('#feed');
+            const b = document.querySelector('#gridBtn');
+            if (!f) return;
+            f.classList.toggle('grid');
+            b.textContent = f.classList.contains('grid') ? 'List view' : 'Grid view';
+        }
+
+        // ─── modal system ──────────────────────────────────────────────────────
+        function openModal(type) {
+            let body = '';
+            if (type === 'confession') {
+                body = `
+              <h3>Post a confession</h3>
+              <div class="notice">Posts are shared immediately. Be kind, avoid personal information, and remember that admins can remove harmful content.</div>
+              <label>Alias / username</label>
+              <input id="alias" maxlength="40" placeholder="e.g. sleepdepriveddev">
+              <label>Image or GIF (optional)</label>
+              <div class="uploadbox" onclick="document.getElementById('imageFile').click()">
+                <input id="imageFile" type="file" accept="image/*" onchange="loadImageFile(event)">
+                <label>Choose an image or GIF</label>
+                <img id="imagePreview" class="preview" alt="Preview">
+              </div>
+              <input id="src" type="hidden">
+              <label>Your confession</label>
+              <textarea id="text" maxlength="1200" placeholder="Say what you need to say…"></textarea>
+              <div class="modalfoot">
+                <button class="btn ghost" onclick="closeModal()">Cancel</button>
+                <button class="btn primary" onclick="submitPost(false)">Post confession</button>
+              </div>
+            `;
+            } else if (type === 'memory') {
+                body = `
+              <h3>Add a memory</h3>
+              <label>Alias</label>
+              <input id="alias" maxlength="40" placeholder="e.g. camera roll historian">
+              <label>Image</label>
+              <div class="uploadbox" onclick="document.getElementById('imageFile').click()">
+                <input id="imageFile" type="file" accept="image/*" onchange="loadImageFile(event)">
+                <label>Choose an image</label>
+                <div style="font-size:12px;color:var(--muted);margin-top:4px">Or paste an image (Ctrl/Cmd+V)</div>
+                <img id="imagePreview" class="preview" alt="Preview">
+              </div>
+              <input id="src" type="hidden">
+              <label>Caption</label>
+              <textarea id="text" maxlength="500" placeholder="What should we remember about this?"></textarea>
+              <div class="notice">Memories are reviewed before publication. Only upload images you have permission to share.</div>
+              <div class="modalfoot">
+                <button class="btn ghost" onclick="closeModal()">Cancel</button>
+                <button class="btn primary" onclick="submitPost(true)">Submit memory</button>
+              </div>
+            `;
+            } else if (type === 'feedback' || type === 'concern') {
+                body = `
+              <h3>${type === 'concern' ? 'Report a serious concern' : 'Give feedback'}</h3>
+              <p>${type === 'concern' ? 'Use this for urgent or serious batch concerns. Moderators will see it in the admin page.' : 'Tell us what would make this better.'}</p>
+              <input id="alias" maxlength="40" placeholder="Optional alias">
+              <textarea id="text" maxlength="2000" placeholder="Your message…"></textarea>
+              <div class="modalfoot">
+                <button class="btn ghost" onclick="closeModal()">Cancel</button>
+                <button class="btn primary" onclick="submitFeedback(${type === 'concern'})">Send</button>
+              </div>
+            `;
+            } else if (type === 'birthday') {
+                body = `
+              <h3>Birthday tracker</h3>
+              <p>See upcoming birthdays and add yours if you'd like. Sharing is optional.</p>
+              <div id="birthdayList" class="empty">Loading birthdays…</div>
+              ${localStorage.getItem('birthday-opt-out') === '1' ?
+                `<div class="notice">You chose not to add a birthday.</div>` :
+                localStorage.getItem('birthday-added') === '1' ?
+                `<div class="notice">Your birthday has already been added from this browser.</div>` :
+                `<div id="birthdayForm">
+                  <label>Name</label>
+                  <input id="birthdayName" maxlength="40" placeholder="Your name">
+                  <label>Birthday</label>
+                  <input id="birthdayDate" type="date">
+                  <div class="modalfoot">
+                    <button class="btn ghost" onclick="skipBirthday()">No thanks</button>
+                    <button class="btn primary" onclick="submitBirthday()">Add birthday</button>
+                  </div>
+                </div>`
+              }
+              <div class="modalfoot">
+                <button class="btn primary" onclick="closeModal()">Close</button>
+              </div>
+            `;
+            } else if (type === 'about') {
+                body = `
+              <h3>Commit History Community Standards</h3>
+              <p>We trust that our members are mature enough to understand the spirit of our Community Standards. Please take a moment to familiarize yourself with these guidelines to ensure a respectful and inclusive environment for everyone:</p>
+              <ol>
+                <li><b>Be kind and respectful.</b> No discrimination, harassment, or hate speech.</li>
+                <li><b>Respect diverse opinions.</b> Constructive criticism is welcome, but we do not tolerate attacks of any kind.</li>
+                <li><b>Keep discussions clean.</b> No explicit, offensive, or NSFW content.</li>
+                <li><b>Don't gossip.</b> This is not a place to spread harmful rumors or baseless accusations.</li>
+              </ol>
+              <p>Before your confessions get posted, they will be screened by the batch representative and other relevant parties.</p>
+              <div class="modalfoot">
+                <button class="btn primary" onclick="closeModal()">Got it</button>
+              </div>
+            `;
+            } else if (type === 'admin') {
+                body = admin ? adminPanel() :
+                    `
+                <h3>Admin access</h3>
+                <p>For batch representatives and authorized moderators only.</p>
+                <input id="login" placeholder="Username">
+                <input id="password" type="password" placeholder="Password">
+                <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-weight:400;color:var(--muted)">
+                  <input id="rememberMe" type="checkbox" style="width:auto;margin:0"> Remember me
+                </label>
+                <div id="err" class="error"></div>
+                <div class="modalfoot">
+                  <button class="btn ghost" onclick="closeModal()">Cancel</button>
+                  <button class="btn primary" onclick="login()">Sign in</button>
+                </div>
+              `;
+            }
+
+            document.body.insertAdjacentHTML('beforeend', `
+            <div class="modalback" onclick="if(event.target===this)closeModal()">
+              <div class="modal">${body}</div>
+            </div>
+          `);
+            if (type === 'birthday') loadBirthdays();
+        }
+
+        function closeModal() { document.querySelector('.modalback')?.remove(); }
+
+        // ─── admin ──────────────────────────────────────────────────────────────
+        function adminPanel() {
+            const q = state.queue || [];
+            return `
+            <h3>Moderation queue</h3>
+            <p>${q.length ? `There ${q.length === 1 ? 'is' : 'are'} ${q.length} submission${q.length === 1 ? '' : 's'} waiting for review.` : 'The queue is clear.'}</p>
+            ${q.map((x, i) => `
+              <div class="post" style="margin:10px 0">
+                <div class="postbody">
+                  <div class="posttop">
+                    <span class="tag">${esc(x.tag)}</span>
+                    <span>${esc(x.kind)} · ${esc(x.alias)}</span>
+                  </div>
+                  ${x.src ? `<img src="${esc(x.src)}" style="width:100%;margin:8px 0;border-radius:8px">` : ''}
+                  <p>${esc(x.text || x.caption)}</p>
+                  <div class="modalfoot">
+                    <button class="btn ghost small" onclick="moderate(${i},false)">Reject</button>
+                    <button class="btn primary small" onclick="moderate(${i},true)">Approve</button>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+            <div class="modalfoot">
+              <button class="btn ghost" onclick="admin=false;closeModal()">Sign out</button>
+            </div>
+          `;
+        }
+
+        function login() {
+            const username = document.querySelector('#login')?.value || '';
+            const password = document.querySelector('#password')?.value || '';
+            if (username === 'batch2026commithistory' && password === 'password1234567') {
+                admin = true;
+                if (document.querySelector('#rememberMe')?.checked) localStorage.setItem('commit-history-admin', '1');
+                else localStorage.removeItem('commit-history-admin');
+                closeModal();
+                setTimeout(() => openModal('admin'), 80);
+            } else {
+                const err = document.querySelector('#err');
+                if (err) err.textContent = 'Those credentials do not have administrator access.';
+            }
+        }
+
+        function moderate(i, approve) {
+            alert('Moderation is not connected to the API yet. The public posts and reactions are connected to Neon.');
+        }
+
+        // ─── feedback ──────────────────────────────────────────────────────────
+        async function submitFeedback(concern) {
+            const message = document.querySelector('#text').value.trim();
+            if (!message) return alert('Please add a message.');
+            try {
+                await api('/feedback', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: document.querySelector('#alias').value.trim() || 'anonymous',
+                        message,
+                        concern
+                    })
+                });
+                closeModal();
+                alert("Thanks — your message was sent to the moderators.");
+            } catch (err) {
+                alert('Your message could not be sent.');
+            }
+        }
+
+        // ─── birthdays ──────────────────────────────────────────────────────────
+        async function loadBirthdays() {
+            try {
+                const rows = await api('/birthdays');
+                const list = document.querySelector('#birthdayList');
+                if (!list) return;
+                const months = Array.from({ length: 12 }, (_, i) => ({
+                    name: new Date(2026, i).toLocaleDateString(undefined, { month: 'long' }),
+                    rows: []
+                }));
+                rows.forEach(x => {
+                    const dt = new Date(x.birthday);
+                    if (!isNaN(dt)) months[dt.getMonth()].rows.push({ ...x, day: dt.getDate() });
+                });
+                list.innerHTML = `
+              <div class="bday-grid">
+                ${months.map(m => `
+                  <div class="bday-month">
+                    <h4>${m.name}</h4>
+                    ${m.rows.length ? m.rows.map(x =>
+                      `<div class="bday-entry"><span class="day">${x.day}</span><span class="name">${esc(x.name)}<span class="small">birthday</span></span></div>`
+                    ).join('') :
+                    `<div class="reply-empty">No birthdays yet</div>`}
+                  </div>
+                `).join('')}
+              </div>
+            `;
+            } catch (err) {
+                const list = document.querySelector('#birthdayList');
+                if (list) list.textContent = `Birthdays could not be loaded: ${err.message || 'unknown error'}`;
+            }
+        }
+
+        function skipBirthday() { localStorage.setItem('birthday-opt-out', '1');
+            closeModal();
+            openModal('birthday'); }
+
+        async function submitBirthday() {
+            const name = document.querySelector('#birthdayName').value.trim();
+            const birthday = document.querySelector('#birthdayDate').value;
+            if (!name || !birthday) return alert('Please add your name and birthday.');
+            try {
+                await api('/birthdays', {
+                    method: 'POST',
+                    body: JSON.stringify({ name, birthday, visitor_id: visitorId() })
+                });
+                localStorage.setItem('birthday-added', '1');
+                closeModal();
+                openModal('birthday');
+            } catch (err) {
+                alert(err.message || 'Birthday could not be saved.');
+            }
+        }
+
+        // ─── image upload ──────────────────────────────────────────────────────
+        function loadImageFile(e) {
+            const file = e.target.files?.[0];
+            if (file) readImage(file);
+        }
+
+        function readImage(file) {
+            if (!file.type.startsWith('image/')) return;
+            const r = new FileReader();
+            r.onload = () => {
+                document.querySelector('#src').value = r.result;
+                const p = document.querySelector('#imagePreview');
+                p.src = r.result;
+                p.style.display = 'block';
+            };
+            r.readAsDataURL(file);
+        }
+
+        document.addEventListener('paste', e => {
+            if (!document.querySelector('.modalback') || !document.querySelector('#imagePreview')) return;
+            const item = [...(e.clipboardData?.items || [])].find(x => x.type.startsWith('image/'));
+            if (item) { e.preventDefault();
+                readImage(item.getAsFile()); }
+        });
+
+        // ─── submit post ────────────────────────────────────────────────────────
+        async function submitPost(mem) {
+            const alias = (document.querySelector('#alias').value.trim() || 'anonymous').slice(0, 40);
+            const text = document.querySelector('#text').value.trim();
+            if (!text) return alert('Please add some text.');
+            const src = document.querySelector('#src')?.value?.trim() || undefined;
+            if (mem && !src) return alert('Please choose or paste an image.');
+
+            const payload = {
+                name: alias,
+                alias,
+                message: text,
+                text,
+                caption: mem ? text : undefined,
+                src,
+                image_url: src
+            };
+
+            try {
+                await api(mem ? '/memories' : '/confessions', { method: 'POST', body: JSON.stringify(payload) });
+                closeModal();
+                alert(mem ? 'Memory posted.' : 'Confession posted.');
+                await loadData();
+            } catch (err) {
+                console.error(err);
+                alert('Submission failed. Check your backend API.');
+            }
+        }
+
+        // ─── init ──────────────────────────────────────────────────────────────
+        if (localStorage.getItem('commit-history-admin') === '1') admin = true;
+        loadData();
+
+        // auto-refresh every 45s if idle
+        setInterval(() => {
+            if (!document.hidden && !document.querySelector('.modalback')) loadData();
+        }, 45000);
+
+        // ─── keyboard shortcut: Escape to close modal ─────────────────────────
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+
 </body>
 </html>
