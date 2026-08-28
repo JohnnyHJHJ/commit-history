@@ -8,6 +8,7 @@ async function ensureAnnouncementFields() {
   await sql`ALTER TABLE announcements ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT FALSE`;
   await sql`ALTER TABLE announcements ADD COLUMN IF NOT EXISTS published BOOLEAN NOT NULL DEFAULT TRUE`;
   await sql`ALTER TABLE announcements ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`;
+  await sql`ALTER TABLE announcements ADD COLUMN IF NOT EXISTS subject TEXT NOT NULL DEFAULT 'General'`;
 }
 
 export default async function handler(req, res) {
@@ -24,11 +25,11 @@ export default async function handler(req, res) {
     }
 
     if (req.method === "POST") {
-      const { title, body, author, priority = "NORMAL", pinned = false, published = true } = req.body || {};
+      const { title, body, author, subject = "General", priority = "NORMAL", pinned = false, published = true } = req.body || {};
       if (!title || !body) return res.status(400).json({ error: "Title and body are required" });
       const [row] = await sql`
-        INSERT INTO announcements (title, body, author, priority, pinned, published)
-        VALUES (${title.trim().slice(0, 200)}, ${body.trim().slice(0, 2000)}, ${(author || "Admin").trim().slice(0, 40)}, ${["NORMAL", "IMPORTANT", "URGENT"].includes(priority) ? priority : "NORMAL"}, ${Boolean(pinned)}, ${Boolean(published)})
+        INSERT INTO announcements (title, body, author, subject, priority, pinned, published)
+        VALUES (${title.trim().slice(0, 200)}, ${body.trim().slice(0, 5000)}, ${(author || "Admin").trim().slice(0, 40)}, ${String(subject).trim().slice(0, 80) || "General"}, ${["NORMAL", "IMPORTANT", "URGENT"].includes(priority) ? priority : "NORMAL"}, ${Boolean(pinned)}, ${Boolean(published)})
         RETURNING *
       `;
       return res.status(201).json(row);

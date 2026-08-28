@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS announcements (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+ALTER TABLE announcements ADD COLUMN IF NOT EXISTS subject TEXT NOT NULL DEFAULT 'General';
 ALTER TABLE announcements ADD COLUMN IF NOT EXISTS priority TEXT NOT NULL DEFAULT 'NORMAL';
 ALTER TABLE announcements ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT FALSE;
 ALTER TABLE announcements ADD COLUMN IF NOT EXISTS published BOOLEAN NOT NULL DEFAULT TRUE;
@@ -90,3 +91,9 @@ CREATE INDEX IF NOT EXISTS idx_memories_created_at
     ON memories (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_announcements_public ON announcements (pinned DESC, created_at DESC) WHERE published = TRUE;
 CREATE INDEX IF NOT EXISTS idx_replies_post ON replies (post_type, post_id, created_at);
+CREATE TABLE IF NOT EXISTS announcement_replies (
+    id BIGSERIAL PRIMARY KEY, announcement_id BIGINT NOT NULL,
+    name TEXT NOT NULL DEFAULT 'anonymous', message TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_announcement_replies ON announcement_replies (announcement_id, created_at);
