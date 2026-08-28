@@ -954,6 +954,20 @@
         .card-birthdays p{color:#111}
         .card-birthdays .btn.small{margin-top:6px;background:#111;color:#f5c87a;border-color:#111}
         .card-birthdays .btn.small:hover{background:#2d1835}
+
+        /* ── clickable links inside announcement text ── */
+        .ann-link{color:#1d4ed8;text-decoration:underline;font-weight:600;word-break:break-word}
+        .ann-link:hover{color:#1e3a8a}
+
+        /* ── announcement forum: reply toggle now opens a form, replies stay visible ── */
+        .announcement-forum .replies-wrap:empty{display:none}
+        .announcement-forum .reply-toggle{margin-top:10px}
+
+        /* ── announcement color-preset swatch picker (neo-brutalist flat squares) ── */
+        .color-picker{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+        .color-swatch{width:34px;height:34px;border:3px solid #111;border-radius:0;box-shadow:2px 2px 0 #111;cursor:pointer;transition:transform var(--transition),box-shadow var(--transition)}
+        .color-swatch:hover{transform:translate(1px,1px);box-shadow:1px 1px 0 #111}
+        .color-swatch.selected{outline:3px solid #35223f;outline-offset:2px}
     </style>
 </head>
 <body>
@@ -966,6 +980,7 @@
         const API_BASE = '/api';
         const SUBJECTS = ['CS 10', 'CS 11', 'CS 30', 'Math 21'];
         const SUBJECT_COLORS = { 'CS 10': 'cs10', 'CS 11': 'cs11', 'CS 30': 'cs30', 'Math 21': 'math21' };
+        const ANNOUNCEMENT_COLORS = { cream: '#fff7ca', pink: '#ffb2c5', mint: '#aef2cf', sky: '#b7d9ff', amber: '#ffc078', lavender: '#e5d4f5' };
 
         // ─── state ──────────────────────────────────────────────────────────────
         let state = {
@@ -984,6 +999,12 @@
         // ─── helpers ────────────────────────────────────────────────────────────
         function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;',
                 '"': '&quot;', "'": '&#39;' }[c])); }
+
+        // Escapes text, then turns bare URLs into clickable, styled links (esc runs first, so this is XSS-safe).
+        function linkify(s) {
+            return esc(s).replace(/(https?:\/\/[^\s<]+)/g, url =>
+                `<a href="${url}" target="_blank" rel="noopener noreferrer" class="ann-link">${url}</a>`);
+        }
 
         function total(x) { return Object.values(x.reactions || {}).reduce((a, b) => a + Number(b || 0), 0); }
 
@@ -1119,7 +1140,7 @@
                     return `<div class="announcement-item">
                 <div class="title">${a.pinned ? '📌 ' : ''}${esc(a.title)}</div>
                 <div class="meta"><span>${new Date(a.created_at).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</span>${a.author ? `<span>by ${esc(a.author)}</span>` : ''}</div>
-                <div class="body">${esc(a.body)}</div>
+                <div class="body">${linkify(a.body)}</div>
                 ${isAdmin ? `<div class="admin-actions"><button class="btn small" onclick="togglePin(${a.id}, ${a.pinned ? 'true' : 'false'})">${a.pinned ? 'Unpin' : '📌 Pin'}</button><button class="btn small danger" onclick="deleteAnnouncement(${a.id})">Delete</button></div>` : ''}
               </div>`;
                 }).join('') :
@@ -1289,15 +1310,19 @@
                 const subjects = [...new Set(state.announcements.map(a => a.subject || 'General'))];
                 const pinned = state.announcements.filter(a => a.pinned);
             
-                const cards = state.announcements.map(a => `<article class="post announcement-forum${a.pinned ? ' pinned' : ''}" id="announcement-${a.id}"><div class="postbody"><div class="posttop"><span class="tag">${a.pinned ? '📌 ' : ''}${esc(a.subject || 'General')}</span><span>${new Date(a.created_at).toLocaleDateString()}</span></div><h3>${esc(a.title)}</h3><p>${esc(a.body)}</p>${admin ? `<div class="admin-actions mt-8"><button class="btn small" onclick="togglePin(${a.id}, ${a.pinned ? 'true' : 'false'})">${a.pinned ? 'Unpin' : '📌 Pin to sidebar'}</button><button class="btn small danger" onclick="deleteAnnouncement(${a.id})">Delete</button></div>` : ''}<button class="btn small" onclick="toggleAnnouncementDiscussion(${a.id})">View discussion</button><div id="announcementDiscussion_${a.id}" class="announcement-discussion hidden"><div id="announcementReplies_${a.id}" class="replies-wrap"></div><div class="inline-reply-form open"><input id="announcementName_${a.id}" maxlength="40" placeholder="Alias (optional)"><textarea id="announcementMessage_${a.id}" maxlength="2000" placeholder="Ask a question or add to the discussion…"></textarea><button class="btn primary small" onclick="replyToAnnouncement(${a.id})">Reply</button></div></div></div></article>`).join('') || '<div class="empty">No announcements yet.</div>';
+                const cards = state.announcements.map(a => {
+                    const bg = ANNOUNCEMENT_COLORS[a.color] || ANNOUNCEMENT_COLORS.cream;
+                    return `<article class="post announcement-forum${a.pinned ? ' pinned' : ''}" id="announcement-${a.id}" style="background:${bg}"><div class="postbody"><div class="posttop"><span class="tag">${a.pinned ? '📌 ' : ''}${esc(a.subject || 'General')}</span><span>${new Date(a.created_at).toLocaleDateString()}</span></div><h3>${esc(a.title)}</h3><p>${linkify(a.body)}</p>${admin ? `<div class="admin-actions mt-8"><button class="btn small" onclick="togglePin(${a.id}, ${a.pinned ? 'true' : 'false'})">${a.pinned ? 'Unpin' : '📌 Pin to sidebar'}</button><button class="btn small danger" onclick="deleteAnnouncement(${a.id})">Delete</button></div>` : ''}<div id="announcementReplies_${a.id}" class="replies-wrap">Loading discussion…</div><button class="btn small reply-toggle" onclick="toggleAnnouncementReplyForm(${a.id})"><span class="icon">💬</span> Reply or ask a question</button><div class="inline-reply-form" id="announcementForm_${a.id}"><input id="announcementName_${a.id}" maxlength="40" placeholder="Alias (optional)"><textarea id="announcementMessage_${a.id}" maxlength="2000" placeholder="Ask a question or add to the discussion…"></textarea><button class="btn primary small" onclick="replyToAnnouncement(${a.id})">Reply</button></div></div></article>`;
+                }).join('') || '<div class="empty">No announcements yet.</div>';
             
                 const pinnedHtml = pinned.length
                     ? pinned.map(a => `<div class="pinned-item" onclick="scrollToAnnouncement(${a.id})"><div class="pinned-title">📌 ${esc(a.title)}</div><div class="pinned-meta">${esc(a.subject || 'General')} · ${new Date(a.created_at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div></div>`).join('')
                     : '<div class="empty" style="padding:14px;border:none;font-size:.82rem;">No pinned announcements yet.</div>';
             
                 shell(`<main class="page" style="max-width:1080px"><button class="btn ghost small back-home" onclick="go('home')">← Back home</button><div class="pagehead" style="padding-top:20px"><div class="left"><div class="eyebrow">Community bulletin</div><h2>Announcement forum</h2><p>Updates, subjects, and questions in one place.</p></div></div><div class="subject-sidebar"><b>Subjects</b><button class="btn small" onclick="filterAnnouncementSubject('')">All announcements</button>${subjects.map(s=>`<button class="btn small" onclick="filterAnnouncementSubject('${esc(s)}')">${esc(s)}</button>`).join('')}</div><div class="announcement-forum-layout"><div id="announcementFeed" class="feed">${cards}</div><aside class="pinned-sidebar"><h4>📌 Pinned announcements</h4>${pinnedHtml}</aside></div></main>`);
+                state.announcements.forEach(a => loadAnnouncementReplies(a.id));
             }
-        function toggleAnnouncementDiscussion(id) { const box=document.getElementById(`announcementDiscussion_${id}`); if (!box) return; box.classList.toggle('hidden'); if (!box.classList.contains('hidden')) loadAnnouncementReplies(id); }
+        function toggleAnnouncementReplyForm(id) { const box=document.getElementById(`announcementForm_${id}`); if (box) box.classList.toggle('open'); }
         function filterAnnouncementSubject(subject) { document.querySelectorAll('.announcement-forum').forEach(x => x.style.display=!subject || x.querySelector('.tag').textContent.replace('📌 ','')===subject?'':'none'); }
         function scrollToAnnouncement(id) {
             const el = document.getElementById(`announcement-${id}`);
@@ -1598,6 +1623,13 @@
               <textarea id="annBody" maxlength="5000" placeholder="Write an announcement… Use Enter for paragraphs."></textarea>
               <label>Author (optional)</label>
               <input id="annAuthor" placeholder="e.g. Admin">
+              <label>Card color</label>
+              <div class="color-picker" id="annColorPicker">
+                ${Object.entries(ANNOUNCEMENT_COLORS).map(([key, hex], i) =>
+                  `<button type="button" class="color-swatch${i === 0 ? ' selected' : ''}" data-color="${key}" style="background:${hex}" onclick="selectAnnColor('${key}')" title="${key}"></button>`
+                ).join('')}
+              </div>
+              <input type="hidden" id="annColor" value="cream">
               <div class="modalfoot">
                 <button class="btn ghost" onclick="closeModal()">Cancel</button>
                 <button class="btn primary" onclick="addAnnouncement()">Publish</button>
@@ -1693,6 +1725,12 @@
         async function loadAdminData() { const data=await api('/admin'); state.queue=[...(data.confessions||[]),...(data.memories||[])].map(normalizePost); state.published=(data.published||[]).map(normalizePost); return data; }
 
         // ─── admin: announcements & tests ──────────────────────────────────────
+        function selectAnnColor(key) {
+            const input = document.querySelector('#annColor');
+            if (input) input.value = key;
+            document.querySelectorAll('#annColorPicker .color-swatch').forEach(el => el.classList.toggle('selected', el.dataset.color === key));
+        }
+
         async function addAnnouncement() {
             const title = document.querySelector('#annTitle')?.value.trim();
             const body = document.querySelector('#annBody')?.value.trim();
@@ -1701,7 +1739,11 @@
             try {
                 await api('/announcements', {
                     method: 'POST',
-                    body: JSON.stringify({ title, body, author, subject: document.querySelector('#annSubject')?.value.trim() || 'General' })
+                    body: JSON.stringify({
+                        title, body, author,
+                        subject: document.querySelector('#annSubject')?.value.trim() || 'General',
+                        color: document.querySelector('#annColor')?.value || 'cream'
+                    })
                 });
                 closeModal();
                 await loadData();
