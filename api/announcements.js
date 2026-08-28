@@ -2,6 +2,7 @@ import { neon } from "@neondatabase/serverless";
 const sql = neon(process.env.DATABASE_URL);
 
 const ADMIN_KEY = process.env.ADMIN_KEY || "";
+const VALID_COLORS = ["cream", "pink", "mint", "sky", "amber", "lavender"];
 
 async function ensureAnnouncementFields() {
   await sql`ALTER TABLE announcements ADD COLUMN IF NOT EXISTS priority TEXT NOT NULL DEFAULT 'NORMAL'`;
@@ -9,6 +10,7 @@ async function ensureAnnouncementFields() {
   await sql`ALTER TABLE announcements ADD COLUMN IF NOT EXISTS published BOOLEAN NOT NULL DEFAULT TRUE`;
   await sql`ALTER TABLE announcements ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`;
   await sql`ALTER TABLE announcements ADD COLUMN IF NOT EXISTS subject TEXT NOT NULL DEFAULT 'General'`;
+  await sql`ALTER TABLE announcements ADD COLUMN IF NOT EXISTS color TEXT NOT NULL DEFAULT 'cream'`;
 }
 
 export default async function handler(req, res) {
@@ -25,11 +27,11 @@ export default async function handler(req, res) {
     }
 
     if (req.method === "POST") {
-      const { title, body, author, subject = "General", priority = "NORMAL", pinned = false, published = true } = req.body || {};
+      const { title, body, author, subject = "General", priority = "NORMAL", pinned = false, published = true, color = "cream" } = req.body || {};
       if (!title || !body) return res.status(400).json({ error: "Title and body are required" });
       const [row] = await sql`
-        INSERT INTO announcements (title, body, author, subject, priority, pinned, published)
-        VALUES (${title.trim().slice(0, 200)}, ${body.trim().slice(0, 5000)}, ${(author || "Admin").trim().slice(0, 40)}, ${String(subject).trim().slice(0, 80) || "General"}, ${["NORMAL", "IMPORTANT", "URGENT"].includes(priority) ? priority : "NORMAL"}, ${Boolean(pinned)}, ${Boolean(published)})
+        INSERT INTO announcements (title, body, author, subject, priority, pinned, published, color)
+        VALUES (${title.trim().slice(0, 200)}, ${body.trim().slice(0, 5000)}, ${(author || "Admin").trim().slice(0, 40)}, ${String(subject).trim().slice(0, 80) || "General"}, ${["NORMAL", "IMPORTANT", "URGENT"].includes(priority) ? priority : "NORMAL"}, ${Boolean(pinned)}, ${Boolean(published)}, ${VALID_COLORS.includes(color) ? color : "cream"})
         RETURNING *
       `;
       return res.status(201).json(row);
@@ -43,7 +45,7 @@ export default async function handler(req, res) {
     }
 
     if (req.method === "PATCH") {
-      const { id, title, body, author, priority, pinned, published } = req.body || {};
+      const { id, title, body, author, priority, pinned, published, color } = req.body || {};
       if (!Number.isSafeInteger(Number(id))) return res.status(400).json({ error: "Valid ID required" });
       const [row] = await sql`UPDATE announcements SET
         title = COALESCE(${title ? String(title).trim().slice(0, 200) : null}, title),
@@ -52,6 +54,7 @@ export default async function handler(req, res) {
         priority = COALESCE(${["NORMAL", "IMPORTANT", "URGENT"].includes(priority) ? priority : null}, priority),
         pinned = COALESCE(${typeof pinned === "boolean" ? pinned : null}, pinned),
         published = COALESCE(${typeof published === "boolean" ? published : null}, published),
+        color = COALESCE(${VALID_COLORS.includes(color) ? color : null}, color),
         updated_at = NOW() WHERE id = ${Number(id)} RETURNING *`;
       return row ? res.status(200).json(row) : res.status(404).json({ error: "Announcement not found" });
     }
