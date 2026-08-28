@@ -23,11 +23,12 @@
             --card-radius: 18px;
             --shadow: 0 12px 40px #0c0812aa;
             --transition: 0.25s cubic-bezier(.22, .61, .36, 1);
+            --cs10: #f97316;
+            --cs11: #3b82f6;
+            --cs30: #22c55e;
+            --math21: #a855f7;
         }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-        }
+        * { box-sizing: border-box; margin: 0; }
         body {
             background: var(--bg);
             color: var(--ink);
@@ -36,40 +37,15 @@
             min-height: 100vh;
             padding-bottom: 1px;
         }
-        button,
-        input,
-        textarea,
-        select {
-            font: inherit;
-            color: inherit;
-        }
-        button {
-            cursor: pointer;
-            background: none;
-            border: none;
-            padding: 0;
-        }
-        a {
-            color: var(--purple);
-            text-decoration: none;
-        }
-        img {
-            display: block;
-            max-width: 100%;
-        }
+        button, input, textarea, select { font: inherit; color: inherit; }
+        button { cursor: pointer; background: none; border: none; padding: 0; }
+        a { color: var(--purple); text-decoration: none; }
+        img { display: block; max-width: 100%; }
 
         /* ── scrollbar ── */
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--line);
-            border-radius: 9px;
-        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 9px; }
 
         /* ── nav ── */
         .nav {
@@ -93,12 +69,8 @@
             color: var(--ink);
             transition: color var(--transition);
         }
-        .brand:hover {
-            color: var(--purple);
-        }
-        .brand span {
-            color: var(--purple);
-        }
+        .brand:hover { color: var(--purple); }
+        .brand span { color: var(--purple); }
         .nav-actions {
             display: flex;
             align-items: center;
@@ -118,7 +90,7 @@
 
         /* ── layout ── */
         .wrap {
-            max-width: 1080px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 28px 18px 60px;
             position: relative;
@@ -135,7 +107,7 @@
         /* ── hero ── */
         .hero {
             text-align: center;
-            padding: 50px 0 60px;
+            padding: 30px 0 40px;
             position: relative;
         }
         .hero::after {
@@ -146,10 +118,7 @@
             opacity: .25;
             pointer-events: none;
         }
-        .hero>* {
-            position: relative;
-            z-index: 1;
-        }
+        .hero>* { position: relative; z-index: 1; }
         .eyebrow {
             text-transform: uppercase;
             letter-spacing: .16em;
@@ -168,12 +137,24 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .hero .sub {
-            color: var(--muted);
-            font-size: 1.05rem;
-            max-width: 520px;
-            margin: 0 auto 28px;
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
+        .actions .btn { min-width: 130px; }
+
+        /* ── home grid ── */
+        .home-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-top: 20px;
+            align-items: start;
+        }
+        .home-main { display: flex; flex-direction: column; gap: 20px; }
+        .home-side { display: flex; flex-direction: column; gap: 20px; }
 
         /* ── buttons ── */
         .btn {
@@ -197,9 +178,7 @@
             box-shadow: 0 6px 20px #0c081244;
             border-color: var(--purple);
         }
-        .btn:active {
-            transform: scale(.97);
-        }
+        .btn:active { transform: scale(.97); }
         .btn.primary {
             background: var(--purple);
             border-color: var(--purple);
@@ -224,15 +203,98 @@
             min-height: 32px;
             border-radius: 9px;
         }
-        .actions {
+        .btn.danger {
+            border-color: var(--rose);
+            color: var(--rose);
+        }
+        .btn.danger:hover {
+            background: var(--rose);
+            color: #0c0812;
+            border-color: var(--rose);
+        }
+
+        /* ── cards ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--card-radius);
+            padding: 20px 22px 22px;
+            transition: border-color var(--transition), transform var(--transition);
+        }
+        .card:hover {
+            border-color: #5a4a6e;
+            transform: translateY(-2px);
+        }
+        .card .eyebrow { font-size: 9px; }
+        .card h3 {
+            font-size: 1.1rem;
+            margin: 4px 0 14px;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-weight: 400;
+        }
+        .mini-item {
+            border-top: 1px solid var(--line);
+            padding: 8px 0;
+            font-size: .85rem;
+        }
+        .mini-item:first-of-type { border-top: 0; }
+        .mini-item b { display: block; font-weight: 600; }
+        .mini-item small { color: var(--muted); font-size: .78rem; }
+
+        /* announcements */
+        .announcement-item {
+            border-bottom: 1px solid var(--line);
+            padding: 10px 0;
+        }
+        .announcement-item:last-child { border-bottom: 0; }
+        .announcement-item .title { font-weight: 600; font-size: .95rem; }
+        .announcement-item .meta {
+            color: var(--muted);
+            font-size: .75rem;
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 2px;
         }
-        .actions .btn {
-            min-width: 130px;
+        .announcement-item .body {
+            color: #ddd6e6;
+            font-size: .88rem;
+            margin-top: 4px;
         }
+        .announcement-item .admin-actions {
+            margin-top: 6px;
+            display: flex;
+            gap: 6px;
+        }
+
+        /* tests timeline */
+        .test-item {
+            display: flex;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--line);
+            align-items: center;
+        }
+        .test-item:last-child { border-bottom: 0; }
+        .test-item .subject-badge {
+            font-weight: 700;
+            font-size: .7rem;
+            padding: 2px 10px;
+            border-radius: 99px;
+            background: var(--line);
+            color: var(--ink);
+            flex-shrink: 0;
+        }
+        .test-item .subject-badge.cs10 { background: var(--cs10); color: #0c0812; }
+        .test-item .subject-badge.cs11 { background: var(--cs11); color: #fff; }
+        .test-item .subject-badge.cs30 { background: var(--cs30); color: #0c0812; }
+        .test-item .subject-badge.math21 { background: var(--math21); color: #fff; }
+        .test-item .test-date {
+            color: var(--muted);
+            font-size: .75rem;
+            white-space: nowrap;
+        }
+        .test-item .test-desc { font-size: .88rem; flex: 1; }
+        .test-item .admin-actions { margin-left: auto; display: flex; gap: 4px; }
 
         /* ── page header ── */
         .pagehead {
@@ -243,19 +305,14 @@
             margin-bottom: 22px;
             flex-wrap: wrap;
         }
-        .pagehead .left .eyebrow {
-            font-size: 10px;
-        }
+        .pagehead .left .eyebrow { font-size: 10px; }
         .pagehead h2 {
             font-family: 'Georgia', 'Times New Roman', serif;
             font-size: 2.2rem;
             letter-spacing: -.04em;
             margin: 2px 0 0;
         }
-        .pagehead p {
-            color: var(--muted);
-            margin: 0;
-        }
+        .pagehead p { color: var(--muted); margin: 0; }
 
         /* ── toolbar ── */
         .toolbar {
@@ -281,22 +338,14 @@
             border-color: var(--purple);
             box-shadow: 0 0 0 3px var(--purple-glow);
         }
-        .toolbar input {
-            flex: 1;
-            min-width: 140px;
-        }
-        .toolbar select {
-            min-width: 110px;
-        }
+        .toolbar input { flex: 1; min-width: 140px; }
+        .toolbar select { min-width: 110px; }
 
         /* ── feed ── */
-        .feed {
-            display: grid;
-            gap: 14px;
-        }
+        .feed { display: grid; gap: 14px; }
         .feed.grid {
             grid-template-columns: 1fr;
-            max-width: 760px;
+            max-width: 620px;
             margin: 0 auto;
         }
 
@@ -314,7 +363,7 @@
         }
         .post .media {
             width: 100%;
-            max-height: 420px;
+            max-height: 320px;
             object-fit: contain;
             background: #1a1523;
             display: block;
@@ -326,17 +375,16 @@
             display: flex;
             justify-content: space-between;
             gap: 10px;
-            font-size: 12px;
+            font-size: 13px;
             color: var(--muted);
             margin-bottom: 6px;
             flex-wrap: wrap;
         }
-        .posttop .tag {
-            font-weight: 700;
-            color: var(--purple);
-        }
+        .posttop .tag { font-weight: 700; color: var(--purple); }
         .posttop .alias {
-            font-weight: 500;
+            font-weight: 700;
+            color: #e0d8ed;
+            font-size: 1rem;
         }
         .post p {
             line-height: 1.72;
@@ -396,9 +444,7 @@
             gap: 2px;
             width: 180px;
         }
-        .reaction-menu.open {
-            display: grid;
-        }
+        .reaction-menu.open { display: grid; }
         .react-choice {
             border: 0;
             background: transparent;
@@ -409,9 +455,7 @@
             transition: background var(--transition);
             min-height: 36px;
         }
-        .react-choice:hover {
-            background: var(--line);
-        }
+        .react-choice:hover { background: var(--line); }
 
         /* ── replies ── */
         .replies-wrap {
@@ -421,6 +465,7 @@
             border-radius: 12px;
             border-left: 3px solid var(--purple);
         }
+        .replies-wrap.hidden { display: none !important; }
         .replies-title {
             font-size: 10px;
             text-transform: uppercase;
@@ -445,9 +490,7 @@
             border-top: 1px solid var(--line);
             font-size: .88rem;
         }
-        .reply-item:first-of-type {
-            border-top: 0;
-        }
+        .reply-item:first-of-type { border-top: 0; }
         .reply-item .rname {
             font-weight: 600;
             font-size: .78rem;
@@ -474,7 +517,7 @@
             font-size: .8rem;
         }
 
-        /* ── reply form (hidden by default, toggled) ── */
+        /* ── reply form ── */
         .inline-reply-form {
             display: none;
             gap: 8px;
@@ -484,9 +527,7 @@
             flex-wrap: wrap;
             animation: slideDown .3s ease;
         }
-        .inline-reply-form.open {
-            display: flex;
-        }
+        .inline-reply-form.open { display: flex; }
         .inline-reply-form input,
         .inline-reply-form textarea {
             border: 1px solid var(--line);
@@ -520,17 +561,11 @@
         }
 
         @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ── reply toggle button ── */
+        /* ── reply toggle ── */
         .reply-toggle {
             border: 1px solid var(--line);
             background: transparent;
@@ -549,9 +584,7 @@
             color: var(--ink);
             border-color: var(--purple);
         }
-        .reply-toggle .icon {
-            font-size: .9rem;
-        }
+        .reply-toggle .icon { font-size: .9rem; }
 
         /* ── leaderboard ── */
         .leader {
@@ -593,50 +626,6 @@
             margin: 2px 0;
         }
 
-        /* ── discovery cards ── */
-        .home-discovery {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-top: 12px;
-        }
-        .discovery-card {
-            background: var(--surface);
-            border: 1px solid var(--line);
-            border-radius: var(--card-radius);
-            padding: 20px 22px 22px;
-            transition: border-color var(--transition), transform var(--transition);
-        }
-        .discovery-card:hover {
-            border-color: #5a4a6e;
-            transform: translateY(-2px);
-        }
-        .discovery-card .eyebrow {
-            font-size: 9px;
-        }
-        .discovery-card h3 {
-            font-size: 1.1rem;
-            margin: 4px 0 14px;
-            font-family: 'Georgia', 'Times New Roman', serif;
-            font-weight: 400;
-        }
-        .mini-item {
-            border-top: 1px solid var(--line);
-            padding: 8px 0;
-            font-size: .85rem;
-        }
-        .mini-item:first-of-type {
-            border-top: 0;
-        }
-        .mini-item b {
-            display: block;
-            font-weight: 600;
-        }
-        .mini-item small {
-            color: var(--muted);
-            font-size: .78rem;
-        }
-
         /* ── modal ── */
         .modalback {
             position: fixed;
@@ -651,12 +640,8 @@
             animation: fadeIn .2s ease;
         }
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         .modal {
             width: min(620px, 100%);
@@ -670,14 +655,8 @@
             animation: slideUp .25s ease;
         }
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(18px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .modal h3 {
             font-family: 'Georgia', 'Times New Roman', serif;
@@ -685,8 +664,7 @@
             margin: 0 0 6px;
             letter-spacing: -.03em;
         }
-        .modal p,
-        .modal li {
+        .modal p, .modal li {
             color: var(--muted);
             line-height: 1.65;
             font-size: .95rem;
@@ -740,11 +718,7 @@
             line-height: 1.55;
             border-left: 3px solid var(--purple);
         }
-        .error {
-            color: var(--rose);
-            font-size: .85rem;
-            margin-top: 6px;
-        }
+        .error { color: var(--rose); font-size: .85rem; margin-top: 6px; }
 
         /* ── upload box ── */
         .uploadbox {
@@ -761,9 +735,7 @@
             border-color: var(--purple);
             background: #221d2b;
         }
-        .uploadbox input {
-            display: none;
-        }
+        .uploadbox input { display: none; }
         .uploadbox label {
             display: inline-block !important;
             margin: 0 !important;
@@ -818,18 +790,9 @@
             margin: 4px 0;
             font-size: .85rem;
         }
-        .bday-entry .day {
-            font-weight: 700;
-            color: var(--rose);
-        }
-        .bday-entry .name {
-            font-weight: 500;
-        }
-        .bday-entry .small {
-            color: var(--muted);
-            font-size: .7rem;
-            display: block;
-        }
+        .bday-entry .day { font-weight: 700; color: var(--rose); }
+        .bday-entry .name { font-weight: 500; }
+        .bday-entry .small { color: var(--muted); font-size: .7rem; display: block; }
 
         /* ── footer ── */
         footer {
@@ -861,152 +824,61 @@
             animation: drift 38s linear infinite;
             filter: saturate(.6);
         }
-        .memory-drift img:nth-child(2) {
-            top: 18%;
-            animation-delay: -13s;
-        }
-        .memory-drift img:nth-child(3) {
-            top: 62%;
-            animation-delay: -25s;
-        }
+        .memory-drift img:nth-child(2) { top: 18%; animation-delay: -13s; }
+        .memory-drift img:nth-child(3) { top: 62%; animation-delay: -25s; }
         @keyframes drift {
-            from {
-                transform: translateX(-280px) rotate(-3deg);
-            }
-            to {
-                transform: translateX(calc(100vw + 280px)) rotate(3deg);
-            }
+            from { transform: translateX(-280px) rotate(-3deg); }
+            to { transform: translateX(calc(100vw + 280px)) rotate(3deg); }
         }
 
         /* ── mobile ── */
+        @media (max-width: 900px) {
+            .home-grid { grid-template-columns: 1fr; }
+            .home-side { order: -1; }
+        }
         @media (max-width: 700px) {
-            .wrap {
-                padding: 16px 14px 40px;
-            }
-            .page {
-                padding: 10px 14px 40px;
-            }
-            .hero {
-                padding: 28px 0 36px;
-            }
-            .hero h1 {
-                font-size: clamp(36px, 12vw, 56px);
-            }
-            .hero .sub {
-                font-size: .92rem;
-            }
-            .pagehead {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .pagehead h2 {
-                font-size: 1.7rem;
-            }
-            .home-discovery {
-                grid-template-columns: 1fr;
-            }
-            .feed.grid {
-                grid-template-columns: 1fr;
-            }
-            .postbody {
-                padding: 14px 14px 12px;
-            }
-            .inline-reply-form input {
-                width: 100%;
-            }
-            .inline-reply-form textarea {
-                min-width: 0;
-                width: 100%;
-            }
-            .inline-reply-form {
-                flex-direction: column;
-            }
-            .inline-reply-form .btn {
-                align-self: flex-end;
-            }
-            .toolbar {
-                flex-wrap: wrap;
-            }
-            .toolbar input {
-                min-width: 100px;
-                flex: 1 1 140px;
-            }
-            .leader {
-                gap: 8px;
-            }
-            .rank {
-                min-width: 110px;
-                padding: 10px 12px;
-            }
-            .rank img {
-                height: 70px;
-            }
-            .modal {
-                padding: 20px 16px;
-            }
-            .reaction-menu {
-                width: 150px;
-                left: 0;
-                right: auto;
-            }
-            .reacts {
-                gap: 3px;
-            }
-            .react {
-                padding: 3px 8px;
-                font-size: .75rem;
-                min-height: 28px;
-            }
-            .nav {
-                padding: 0 14px;
-                height: 58px;
-            }
-            .brand {
-                font-size: 1rem;
-            }
-            .memory-drift img {
-                width: 120px;
-                height: 90px;
-            }
-            .bday-grid {
-                grid-template-columns: 1fr 1fr;
-            }
+            .wrap { padding: 16px 14px 40px; }
+            .page { padding: 10px 14px 40px; }
+            .hero { padding: 20px 0 28px; }
+            .hero h1 { font-size: clamp(36px, 12vw, 56px); }
+            .pagehead { flex-direction: column; align-items: flex-start; }
+            .pagehead h2 { font-size: 1.7rem; }
+            .feed.grid { grid-template-columns: 1fr; }
+            .postbody { padding: 14px 14px 12px; }
+            .inline-reply-form input { width: 100%; }
+            .inline-reply-form textarea { min-width: 0; width: 100%; }
+            .inline-reply-form { flex-direction: column; }
+            .inline-reply-form .btn { align-self: flex-end; }
+            .toolbar { flex-wrap: wrap; }
+            .toolbar input { min-width: 100px; flex: 1 1 140px; }
+            .leader { gap: 8px; }
+            .rank { min-width: 110px; padding: 10px 12px; }
+            .rank img { height: 70px; }
+            .modal { padding: 20px 16px; }
+            .reaction-menu { width: 150px; left: 0; right: auto; }
+            .reacts { gap: 3px; }
+            .react { padding: 3px 8px; font-size: .75rem; min-height: 28px; }
+            .nav { padding: 0 14px; height: 58px; }
+            .brand { font-size: 1rem; }
+            .memory-drift img { width: 120px; height: 90px; }
+            .bday-grid { grid-template-columns: 1fr 1fr; }
+            .home-grid { grid-template-columns: 1fr; }
+            .home-side { order: -1; }
         }
         @media (max-width: 420px) {
-            .actions .btn {
-                min-width: 100%;
-                justify-content: center;
-            }
-            .bday-grid {
-                grid-template-columns: 1fr;
-            }
-            .pagehead .left .eyebrow {
-                font-size: 9px;
-            }
+            .actions .btn { min-width: 100%; justify-content: center; }
+            .bday-grid { grid-template-columns: 1fr; }
+            .pagehead .left .eyebrow { font-size: 9px; }
         }
 
         /* ── utilities ── */
-        .mt-8 {
-            margin-top: 8px;
-        }
-        .gap-6 {
-            gap: 6px;
-        }
-        .flex-wrap {
-            flex-wrap: wrap;
-        }
-        .text-center {
-            text-align: center;
-        }
-        .w-full {
-            width: 100%;
-        }
-        .hidden {
-            display: none !important;
-        }
-        .relative {
-            position: relative;
-        }
+        .mt-8 { margin-top: 8px; }
+        .gap-6 { gap: 6px; }
+        .flex-wrap { flex-wrap: wrap; }
+        .text-center { text-align: center; }
+        .w-full { width: 100%; }
+        .hidden { display: none !important; }
+        .relative { position: relative; }
     </style>
 </head>
 <body>
@@ -1017,12 +889,22 @@
         // ─── constants ──────────────────────────────────────────────────────────
         const REACTIONS = ['❤️', '😂', '😭', '🥹', '👏', '🫶', '💀', '✨', '😮', '🤍'];
         const API_BASE = '/api';
+        const SUBJECTS = ['CS 10', 'CS 11', 'CS 30', 'Math 21'];
+        const SUBJECT_COLORS = { 'CS 10': 'cs10', 'CS 11': 'cs11', 'CS 30': 'cs30', 'Math 21': 'math21' };
 
         // ─── state ──────────────────────────────────────────────────────────────
-        let state = { confessions: [], memories: [], birthdays: [], queue: [] };
+        let state = {
+            confessions: [],
+            memories: [],
+            birthdays: [],
+            queue: [],
+            announcements: [],
+            tests: []
+        };
         let view = 'home';
         let admin = false;
         let loading = false;
+        let adminKey = sessionStorage.getItem('commit-history-admin-key') || '';
 
         // ─── helpers ────────────────────────────────────────────────────────────
         function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;',
@@ -1052,11 +934,17 @@
 
         function reacted(x, r) { return localStorage.getItem(`reaction:${x.id}:${r}`) === '1'; }
 
+        function pluralize(n, singular, plural) { return n === 1 ? singular : plural; }
+
         // ─── API ────────────────────────────────────────────────────────────────
         async function api(path, options = {}) {
+            const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+            if (adminKey && !headers.Authorization) {
+                headers.Authorization = `Bearer ${adminKey}`;
+            }
             const res = await fetch(API_BASE + path, {
                 ...options,
-                headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
+                headers
             });
             const text = await res.text();
             let data = {};
@@ -1069,18 +957,24 @@
         async function loadData() {
             loading = true;
             try {
-                const [confessions, memories, birthdays] = await Promise.all([
+                const [confessions, memories, birthdays, announcements, tests] = await Promise.all([
                     api('/confessions'),
                     api('/memories'),
-                    api('/birthdays').catch(() => [])
+                    api('/birthdays').catch(() => []),
+                    api('/announcements').catch(() => []),
+                    api('/tests').catch(() => [])
                 ]);
                 state.confessions = (Array.isArray(confessions) ? confessions : confessions.data || []).map(normalizePost);
                 state.memories = (Array.isArray(memories) ? memories : memories.data || []).map(normalizePost);
                 state.birthdays = Array.isArray(birthdays) ? birthdays : [];
+                state.announcements = Array.isArray(announcements) ? announcements : [];
+                state.tests = Array.isArray(tests) ? tests : [];
             } catch (err) {
                 console.error(err);
                 state.confessions = [];
                 state.memories = [];
+                state.announcements = [];
+                state.tests = [];
                 alert('Could not connect to the backend. Check your Vercel API routes and Neon connection.');
             } finally {
                 loading = false;
@@ -1104,7 +998,7 @@
             <nav class="nav">
               <button class="brand" onclick="go('home')">commit <span>history</span></button>
               <div class="nav-actions">
-                <a class="admin-link" href="/admin.html">Admin</a>
+                <button class="admin-link" onclick="openModal('admin')">Admin</button>
               </div>
             </nav>
             ${inner}
@@ -1129,12 +1023,38 @@
                 .filter(x => { const dt = new Date(x.created_at); return dt.getMonth() === m && dt.getDate() === d; })
                 .slice(0, 3);
 
+            // announcements
+            const annHtml = state.announcements.length ?
+                state.announcements.map(a => {
+                    const isAdmin = admin;
+                    return `<div class="announcement-item">
+                <div class="title">${esc(a.title)}</div>
+                <div class="meta"><span>${new Date(a.created_at).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</span>${a.author ? `<span>by ${esc(a.author)}</span>` : ''}</div>
+                <div class="body">${esc(a.body)}</div>
+                ${isAdmin ? `<div class="admin-actions"><button class="btn small danger" onclick="deleteAnnouncement(${a.id})">Delete</button></div>` : ''}
+              </div>`;
+                }).join('') :
+                `<div class="empty" style="padding:20px 0;border:none;">No announcements yet.</div>`;
+
+            // tests timeline
+            const testsHtml = state.tests.length ?
+                state.tests.map(t => {
+                    const subjClass = SUBJECT_COLORS[t.subject] || '';
+                    const isAdmin = admin;
+                    return `<div class="test-item">
+                <span class="subject-badge ${subjClass}">${esc(t.subject)}</span>
+                <span class="test-date">${new Date(t.date).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span>
+                <span class="test-desc">${esc(t.description)}</span>
+                ${isAdmin ? `<div class="admin-actions"><button class="btn small danger" onclick="deleteTest(${t.id})">×</button></div>` : ''}
+              </div>`;
+                }).join('') :
+                `<div class="empty" style="padding:20px 0;border:none;">No tests added yet.</div>`;
+
             shell(`
             <main class="wrap">
               <section class="hero">
                 <div class="eyebrow">compscilog's shared archive</div>
                 <h1>commit<br>history</h1>
-                <p class="sub">A quiet place for confessions, memories, and the moments that shape us.</p>
                 <div class="actions">
                   <button class="btn primary" onclick="go('confessions')">View confessions</button>
                   <button class="btn" onclick="go('memories')">View memories</button>
@@ -1144,25 +1064,43 @@
                   <button class="btn" onclick="openModal('about')">Community standards</button>
                 </div>
               </section>
-              <section class="home-discovery">
-                <div class="discovery-card">
-                  <div class="eyebrow">coming up</div>
-                  <h3>Upcoming birthdays</h3>
-                  ${upcoming.length ? upcoming.map(x =>
-                    `<div class="mini-item"><b>${esc(x.name)}</b><small>${x.date.toLocaleDateString(undefined,{month:'long',day:'numeric'})}</small></div>`
-                  ).join('') :
-                  `<div class="mini-item"><small>No birthdays added yet.</small></div>`}
-                  <button class="btn small" style="margin-top:10px" onclick="openModal('birthday')">View tracker</button>
+
+              <div class="home-grid">
+                <div class="home-main">
+                  <div class="card">
+                    <div class="eyebrow">coming up</div>
+                    <h3>Upcoming birthdays</h3>
+                    ${upcoming.length ? upcoming.map(x =>
+                      `<div class="mini-item"><b>${esc(x.name)}</b><small>${x.date.toLocaleDateString(undefined,{month:'long',day:'numeric'})}</small></div>`
+                    ).join('') :
+                    `<div class="mini-item"><small>No birthdays added yet.</small></div>`}
+                    <button class="btn small" style="margin-top:10px" onclick="openModal('birthday')">View tracker</button>
+                  </div>
+                  <div class="card">
+                    <div class="eyebrow">from the archive</div>
+                    <h3>On this day</h3>
+                    ${today.length ? today.map(x =>
+                      `<div class="mini-item"><b>${esc(x.alias)}</b><small>${esc((x.text||x.caption).slice(0,80))}</small></div>`
+                    ).join('') :
+                    `<div class="mini-item"><small>No posts from this date yet — today could be the first.</small></div>`}
+                  </div>
                 </div>
-                <div class="discovery-card">
-                  <div class="eyebrow">from the archive</div>
-                  <h3>On this day</h3>
-                  ${today.length ? today.map(x =>
-                    `<div class="mini-item"><b>${esc(x.alias)}</b><small>${esc((x.text||x.caption).slice(0,80))}</small></div>`
-                  ).join('') :
-                  `<div class="mini-item"><small>No posts from this date yet — today could be the first.</small></div>`}
+
+                <div class="home-side">
+                  <div class="card">
+                    <div class="eyebrow">📢 announcements</div>
+                    <h3>What's new</h3>
+                    <div style="max-height:300px;overflow-y:auto;">${annHtml}</div>
+                    ${admin ? `<button class="btn small primary" style="margin-top:12px;width:100%" onclick="openModal('addAnnouncement')">+ Add announcement</button>` : ''}
+                  </div>
+                  <div class="card">
+                    <div class="eyebrow">📝 test tracker</div>
+                    <h3>Upcoming tests</h3>
+                    <div style="max-height:260px;overflow-y:auto;">${testsHtml}</div>
+                    ${admin ? `<button class="btn small primary" style="margin-top:12px;width:100%" onclick="openModal('addTest')">+ Add test</button>` : ''}
+                  </div>
                 </div>
-              </section>
+              </div>
             </main>
           `);
         }
@@ -1170,8 +1108,10 @@
         // ─── feed ───────────────────────────────────────────────────────────────
         function renderFeed(mem) {
             let items = state[mem ? 'memories' : 'confessions'];
-            // default: newest first
             items = [...items].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+            const noun = mem ? 'memory' : 'confession';
+            const plural = pluralize(items.length, noun, noun + (noun === 'memory' ? 'ies' : 's'));
 
             shell(`
             <main class="page">
@@ -1180,7 +1120,7 @@
                 <div class="left">
                   <div class="eyebrow">${mem ? 'shared memories' : 'anonymous-ish thoughts'}</div>
                   <h2>${mem ? 'Memories' : 'Confessions'}</h2>
-                  <p>${items.length} ${mem ? 'memory' : 'confession'}${items.length !== 1 ? 's' : ''}</p>
+                  <p>${items.length} ${plural}</p>
                 </div>
                 <button class="btn primary" onclick="openModal('${mem?'memory':'confession'}')">${mem ? 'Add a memory' : 'Post a confession'}</button>
               </div>
@@ -1199,8 +1139,7 @@
               </div>
             </main>
           `);
-            if (items.length && !mem) loadInlineReplies('confession');
-            // wire up sort select to match default
+            if (items.length) loadInlineReplies(mem ? 'memory' : 'confession');
             const sel = document.getElementById('sortSelect');
             if (sel) sel.value = 'newest';
         }
@@ -1218,7 +1157,6 @@
 
         // ─── post card ──────────────────────────────────────────────────────────
         function post(x, mem) {
-            const replyCount = 0; // we'll fill this later
             return `
             <article class="post" data-id="${Number(x.id)}" data-kind="${mem?'memory':'confession'}" data-search="${esc((x.text||x.caption).toLowerCase())}">
               ${x.src ? `<img class="media" src="${esc(x.src)}" alt="Shared attachment" loading="lazy">` : ''}
@@ -1228,10 +1166,10 @@
                   <span class="alias">${esc(x.alias)}</span>
                 </div>
                 <p>${esc(x.text || x.caption)}</p>
-                ${mem ? '' : `<div class="replies-wrap" data-replies-for="${Number(x.id)}">
+                <div class="replies-wrap" data-replies-for="${Number(x.id)}">
                   <div class="replies-title">Replies <span class="count-badge" id="replyCount_${x.id}">…</span></div>
                   <div class="reply-loading">Loading replies…</div>
-                </div>`}
+                </div>
                 <div class="reacts">
                   ${REACTIONS.filter(r => Number(x.reactions?.[r]||0) > 0).map(r =>
                     `<button class="react ${reacted(x,r)?'active':''}" onclick="react('${esc(x.tag)}',this,'${r}')">${r} <span class="count">${Number(x.reactions[r])}</span></button>`
@@ -1244,13 +1182,11 @@
                     ${REACTIONS.map(r => `<button class="react-choice" onclick="react('${esc(x.tag)}',this,'${r}')">${r}</button>`).join('')}
                   </div>
                 </div>
-                ${mem ? '' : `
-                  <div class="inline-reply-form" id="replyForm_${x.id}">
-                    <input name="name" maxlength="40" placeholder="Alias" class="reply-name">
-                    <textarea name="message" maxlength="1000" placeholder="Write a reply…" class="reply-msg" required></textarea>
-                    <button class="btn primary small" onclick="sendInlineReply(event,'confession',${Number(x.id)})">Reply</button>
-                  </div>
-                `}
+                <div class="inline-reply-form" id="replyForm_${x.id}">
+                  <input name="name" maxlength="40" placeholder="Alias" class="reply-name">
+                  <textarea name="message" maxlength="1000" placeholder="Write a reply…" class="reply-msg" required></textarea>
+                  <button class="btn primary small" onclick="sendInlineReply(event,'${mem?'memory':'confession'}',${Number(x.id)})">Reply</button>
+                </div>
               </div>
             </article>
           `;
@@ -1261,7 +1197,6 @@
             const form = document.getElementById(`replyForm_${id}`);
             if (!form) return;
             const isOpen = form.classList.contains('open');
-            // close all others
             document.querySelectorAll('.inline-reply-form.open').forEach(f => { if (f !== form) f.classList.remove('open'); });
             form.classList.toggle('open');
             if (!isOpen) {
@@ -1282,19 +1217,21 @@
                     const rows = await api(`/replies?post_type=${kind}&post_id=${id}`);
                     const count = rows.length;
                     if (countEl) countEl.textContent = count;
-                    const listHtml = rows.length ?
-                        rows.map(r =>
-                            `<div class="reply-item"><span class="rname">${esc(r.name)}</span><span class="rmsg">${esc(r.message)}</span></div>`
-                        ).join('') :
-                        `<div class="reply-empty">No replies yet.</div>`;
+                    if (count === 0) {
+                        box.classList.add('hidden');
+                        return;
+                    }
+                    box.classList.remove('hidden');
+                    const listHtml = rows.map(r =>
+                        `<div class="reply-item"><span class="rname">${esc(r.name)}</span><span class="rmsg">${esc(r.message)}</span></div>`
+                    ).join('');
                     box.innerHTML = `
                 <div class="replies-title">Replies <span class="count-badge">${count}</span></div>
                 ${listHtml}
               `;
-                    // re-attach the form that was replaced
+                    // re-attach the form
                     const form = p.querySelector('.inline-reply-form');
                     if (form) box.appendChild(form);
-                    // re-bind the form's submit
                     const oldForm = box.querySelector('.inline-reply-form');
                     if (oldForm) {
                         oldForm.querySelector('.reply-msg')?.addEventListener('keydown', e => {
@@ -1355,22 +1292,19 @@
                 });
                 x.reactions = result.reactions || {};
                 localStorage.setItem(`reaction:${x.id}:${r}`, was ? '0' : '1');
-                // re-render just this post
                 const old = btn.closest('.post');
                 if (old) {
                     const temp = document.createElement('div');
                     temp.innerHTML = post(x, view === 'memories');
                     const fresh = temp.firstElementChild;
-                    // preserve reply form state
                     const oldForm = old.querySelector('.inline-reply-form');
                     const newForm = fresh?.querySelector('.inline-reply-form');
                     if (oldForm && newForm) {
-                        const wasOpen = oldForm.classList.contains('open');
-                        if (wasOpen) newForm.classList.add('open');
+                        if (oldForm.classList.contains('open')) newForm.classList.add('open');
                     }
                     old.replaceWith(fresh);
-                    // re-load replies for this post
                     if (view !== 'memories') loadInlineReplies('confession');
+                    else loadInlineReplies('memory');
                 }
             } catch (err) {
                 console.error(err);
@@ -1406,8 +1340,7 @@
             const feed = document.querySelector('#feed');
             if (feed) {
                 feed.innerHTML = items.map(x => post(x, mem)).join('');
-                if (!mem) loadInlineReplies('confession');
-                // re-apply filter
+                loadInlineReplies(mem ? 'memory' : 'confession');
                 const search = document.getElementById('search');
                 if (search && search.value) filterPosts(search.value);
             }
@@ -1531,6 +1464,36 @@
                   <button class="btn primary" onclick="login()">Sign in</button>
                 </div>
               `;
+            } else if (type === 'addAnnouncement') {
+                body = `
+              <h3>Add announcement</h3>
+              <label>Title</label>
+              <input id="annTitle" placeholder="Announcement title">
+              <label>Message</label>
+              <textarea id="annBody" placeholder="Full text…"></textarea>
+              <label>Author (optional)</label>
+              <input id="annAuthor" placeholder="e.g. Admin">
+              <div class="modalfoot">
+                <button class="btn ghost" onclick="closeModal()">Cancel</button>
+                <button class="btn primary" onclick="addAnnouncement()">Publish</button>
+              </div>
+            `;
+            } else if (type === 'addTest') {
+                body = `
+              <h3>Add test event</h3>
+              <label>Subject</label>
+              <select id="testSubject">
+                ${SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('')}
+              </select>
+              <label>Date</label>
+              <input id="testDate" type="date">
+              <label>Description</label>
+              <input id="testDesc" placeholder="e.g. Quiz 2, Long Exam, etc.">
+              <div class="modalfoot">
+                <button class="btn ghost" onclick="closeModal()">Cancel</button>
+                <button class="btn primary" onclick="addTest()">Add test</button>
+              </div>
+            `;
             }
 
             document.body.insertAdjacentHTML('beforeend', `
@@ -1543,7 +1506,7 @@
 
         function closeModal() { document.querySelector('.modalback')?.remove(); }
 
-        // ─── admin ──────────────────────────────────────────────────────────────
+        // ─── admin functions ──────────────────────────────────────────────────
         function adminPanel() {
             const q = state.queue || [];
             return `
@@ -1565,8 +1528,14 @@
                 </div>
               </div>
             `).join('')}
+            <hr style="border-color:var(--line);margin:20px 0;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn primary" onclick="closeModal();openModal('addAnnouncement')">+ Announcement</button>
+              <button class="btn primary" onclick="closeModal();openModal('addTest')">+ Test</button>
+              <button class="btn danger" onclick="signOut()">Sign out</button>
+            </div>
             <div class="modalfoot">
-              <button class="btn ghost" onclick="admin=false;closeModal()">Sign out</button>
+              <button class="btn ghost" onclick="admin=false;closeModal()">Close</button>
             </div>
           `;
         }
@@ -1574,20 +1543,88 @@
         function login() {
             const username = document.querySelector('#login')?.value || '';
             const password = document.querySelector('#password')?.value || '';
+            // For admin key we use the same password as before, but now we also set the key for API calls.
             if (username === 'batch2026commithistory' && password === 'password1234567') {
                 admin = true;
+                adminKey = password; // simple, but we can also use a separate key
+                sessionStorage.setItem('commit-history-admin-key', adminKey);
                 if (document.querySelector('#rememberMe')?.checked) localStorage.setItem('commit-history-admin', '1');
                 else localStorage.removeItem('commit-history-admin');
                 closeModal();
                 setTimeout(() => openModal('admin'), 80);
+                // reload data to show admin controls
+                loadData();
             } else {
                 const err = document.querySelector('#err');
                 if (err) err.textContent = 'Those credentials do not have administrator access.';
             }
         }
 
+        function signOut() {
+            admin = false;
+            adminKey = '';
+            sessionStorage.removeItem('commit-history-admin-key');
+            closeModal();
+            render();
+        }
+
         function moderate(i, approve) {
             alert('Moderation is not connected to the API yet. The public posts and reactions are connected to Neon.');
+        }
+
+        // ─── admin: announcements & tests ──────────────────────────────────────
+        async function addAnnouncement() {
+            const title = document.querySelector('#annTitle')?.value.trim();
+            const body = document.querySelector('#annBody')?.value.trim();
+            const author = document.querySelector('#annAuthor')?.value.trim() || 'Admin';
+            if (!title || !body) return alert('Title and message are required.');
+            try {
+                await api('/announcements', {
+                    method: 'POST',
+                    body: JSON.stringify({ title, body, author })
+                });
+                closeModal();
+                await loadData();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        async function deleteAnnouncement(id) {
+            if (!confirm('Delete this announcement?')) return;
+            try {
+                await api(`/announcements?id=${id}`, { method: 'DELETE' });
+                await loadData();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        async function addTest() {
+            const subject = document.querySelector('#testSubject')?.value;
+            const date = document.querySelector('#testDate')?.value;
+            const description = document.querySelector('#testDesc')?.value.trim();
+            if (!subject || !date || !description) return alert('All fields are required.');
+            try {
+                await api('/tests', {
+                    method: 'POST',
+                    body: JSON.stringify({ subject, date, description })
+                });
+                closeModal();
+                await loadData();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        async function deleteTest(id) {
+            if (!confirm('Delete this test?')) return;
+            try {
+                await api(`/tests?id=${id}`, { method: 'DELETE' });
+                await loadData();
+            } catch (err) {
+                alert(err.message);
+            }
         }
 
         // ─── feedback ──────────────────────────────────────────────────────────
@@ -1719,15 +1756,16 @@
         }
 
         // ─── init ──────────────────────────────────────────────────────────────
-        if (localStorage.getItem('commit-history-admin') === '1') admin = true;
+        if (localStorage.getItem('commit-history-admin') === '1') {
+            admin = true;
+            adminKey = sessionStorage.getItem('commit-history-admin-key') || 'password1234567'; // fallback
+        }
         loadData();
 
-        // auto-refresh every 45s if idle
         setInterval(() => {
             if (!document.hidden && !document.querySelector('.modalback')) loadData();
         }, 45000);
 
-        // ─── keyboard shortcut: Escape to close modal ─────────────────────────
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') closeModal();
         });
