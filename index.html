@@ -906,19 +906,20 @@
         .announcements-list:empty{display:none}
 
         /* ── birthday timeline: more eye-catching ── */
-        .bday-grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:14px}
-        .bday-month{position:relative;overflow:hidden;background:linear-gradient(160deg,#2d1f3a,#1c1024);border:1px solid #6b46a3;box-shadow:0 8px 22px #1c102455;transition:transform var(--transition),box-shadow var(--transition)}
-        .bday-month:hover{transform:translateY(-3px);box-shadow:0 12px 30px #6b46a355}
-        .bday-month::before{content:'';position:absolute;top:-40%;right:-35%;width:75%;height:75%;background:radial-gradient(circle,#c084fc4d,transparent 70%);pointer-events:none}
-        .bday-month h4{position:relative;color:#e9d5ff;text-transform:uppercase;letter-spacing:.1em;font-size:.78rem;display:flex;align-items:center;justify-content:space-between;gap:6px}
-        .bday-month.current-month{border-color:#f5c87a;box-shadow:0 0 0 2px #f5c87a55,0 10px 28px #f5c87a33}
-        .bday-month.current-month h4{color:#f5c87a}
-        .bday-month .current-badge{background:#f5c87a;color:#2d1835;font-size:.6rem;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:99px;text-transform:none;box-shadow:0 0 10px #f5c87a99}
-        .bday-entry{position:relative;background:#ffffff14;border:1px solid #c084fc3d;transition:transform var(--transition),box-shadow var(--transition),border-color var(--transition)}
-        .bday-entry:hover{transform:translateY(-2px) scale(1.02);border-color:#c084fc;box-shadow:0 6px 16px #c084fc44}
-        .bday-entry .day{background:linear-gradient(135deg,#f5c87a,#f09b9b);color:#2d1835;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:50%;box-shadow:0 0 10px #f5c87a88;font-size:.76rem}
-        .bday-entry .name{color:#fdfbff}
-        .bday-entry .small{color:#e2d3f2}
+        .bday-grid{grid-template-columns:repeat(3,1fr);gap:10px}
+        .bday-month{position:relative;background:#efe6d8;border:2px solid #4a3456;box-shadow:4px 4px 0 #4a3456;border-radius:0;padding:10px 12px;transition:transform var(--transition),box-shadow var(--transition)}
+        .bday-month:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 #4a3456}
+        .bday-month h4{color:#35223f;text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 0 6px}
+        .bday-month.current-month{background:#f5c87a;border-color:#4a3456}
+        .bday-month.current-month h4{color:#2d1835}
+        .bday-month .current-badge{background:#35223f;color:#f5c87a;font-size:.55rem;font-weight:800;letter-spacing:.03em;padding:2px 6px;border-radius:0;text-transform:none}
+        .bday-entries{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+        .bday-entry{position:relative;background:#fff;border:1.5px solid #4a3456;border-radius:0;padding:4px 5px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;transition:transform var(--transition)}
+        .bday-entry:hover{transform:translate(1px,1px)}
+        .bday-entry .day{background:#f09b9b;color:#2d1835;width:20px;height:20px;display:flex;align-items:center;justify-content:center;border:1px solid #4a3456;border-radius:0;font-size:.68rem;font-weight:700}
+        .bday-entry .name{color:#35223f;font-size:.72rem;line-height:1.15;word-break:break-word}
+        @media(max-width:820px){.bday-grid{grid-template-columns:1fr 1fr}}
+        @media(max-width:480px){.bday-grid{grid-template-columns:1fr}}
 
         /* ── announcement forum: pinned sidebar ── */
         .announcement-forum-layout{display:grid;grid-template-columns:1fr 260px;gap:20px;align-items:start}
@@ -939,6 +940,20 @@
         .post{background:#e4dac4}
         .card{background:#e9e1d1}
         .archive-grid .card:nth-child(1),.archive-grid .card:nth-child(2),.archive-grid .card:nth-child(3),.archive-grid .card:nth-child(4){background:#e2dac9}
+
+        /* ── home page: Birthdays card — flat neo-brutalist accent, distinct from the other archive cards ── */
+        .card-birthdays{background:#f5c87a;border:3px solid #111;box-shadow:6px 6px 0 #111}
+        .archive-grid .card.card-birthdays{background:#f5c87a}
+        .card-birthdays .eyebrow{color:#111;opacity:.7}
+        .card-birthdays h3{color:#111}
+        .card-birthdays .mini-item{background:#fff7e6;border:2px solid #111;border-radius:0;box-shadow:3px 3px 0 #111;padding:7px 11px;margin:8px 0;display:flex;align-items:center;justify-content:space-between;gap:8px}
+        .card-birthdays .mini-item:first-of-type{border-top:2px solid #111}
+        .card-birthdays .mini-item b{font-weight:800;color:#111}
+        .card-birthdays .mini-item small{color:#4a3456;font-weight:700}
+        .card-birthdays .mini-item:hover{transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+        .card-birthdays p{color:#111}
+        .card-birthdays .btn.small{margin-top:6px;background:#111;color:#f5c87a;border-color:#111}
+        .card-birthdays .btn.small:hover{background:#2d1835}
     </style>
 </head>
 <body>
@@ -1124,7 +1139,7 @@
                 }).join('') :
                 `<div class="empty" style="padding:20px 0;border:none;">No tests added yet.</div>`;
 
-            shell(`<main class="wrap"><section class="bulletin"><section class="bulletin-brand"><div class="eyebrow">A shared archive / batch 2026</div><h1>COMMIT<br>HISTORY</h1><p>Memories, confessions, and the tiny moments that make a community ours.</p><div class="bulletin-actions"><button class="btn primary" onclick="go('memories')">Share a memory</button><button class="btn" onclick="go('confessions')">Write a confession</button><button class="btn" onclick="openModal('about')">Community standards →</button></div></section><aside class="quick-card"><h2>Announcements</h2><div class="announcements-list">${annHtml}</div>${admin ? `<button class="btn small" onclick="openModal('addAnnouncement')">+ New announcement</button>` : ''}</aside></section><section class="home-grid" style="margin-top:32px"><div class="home-main"><span class="section-label">The archive</span><div class="archive-grid"><div class="card"><div class="eyebrow">Photo diary</div><h3>Memories</h3><p>${state.memories.length} approved snapshots from the people here.</p><button class="btn small" onclick="go('memories')">Open memories</button></div><div class="card"><div class="eyebrow">Say it</div><h3>Confessions</h3><p>${state.confessions.length} stories, thoughts, and little secrets.</p><button class="btn small" onclick="go('confessions')">Read confessions</button></div><div class="card"><div class="eyebrow">On this day</div><h3>Archive rewind</h3>${today.length ? today.map(x=>`<div class="mini-item"><b>${esc(x.alias)}</b><small>${esc((x.text||x.caption).slice(0,70))}</small></div>`).join('') : '<p>Nothing from this date yet. Leave a trace.</p>'}</div><div class="card"><div class="eyebrow">Coming up</div><h3>Birthdays</h3>${upcoming.length ? upcoming.map(x=>`<div class="mini-item"><b>${esc(x.name)}</b><small>${x.date.toLocaleDateString(undefined,{month:'long',day:'numeric'})}</small></div>`).join('') : '<p>No birthdays added yet.</p>'}<button class="btn small" onclick="openModal('birthday')">Birthday tracker</button></div></div></div><aside class="home-side"><div class="card"><div class="eyebrow">Test tracker</div><h3>Upcoming events</h3>${testsHtml}</div><div class="card"><div class="eyebrow">Got a thought?</div><h3>Community desk</h3><button class="btn small" onclick="openModal('feedback')">Give feedback</button> <button class="btn small" onclick="openModal('concern')">Serious concern</button></div></aside></section></main>`);
+            shell(`<main class="wrap"><section class="bulletin"><section class="bulletin-brand"><div class="eyebrow">A shared archive / batch 2026</div><h1>COMMIT<br>HISTORY</h1><p>Memories, confessions, and the tiny moments that make a community ours.</p><div class="bulletin-actions"><button class="btn primary" onclick="go('memories')">Share a memory</button><button class="btn" onclick="go('confessions')">Write a confession</button><button class="btn" onclick="openModal('about')">Community standards →</button></div></section><aside class="quick-card"><h2>Announcements</h2><div class="announcements-list">${annHtml}</div>${admin ? `<button class="btn small" onclick="openModal('addAnnouncement')">+ New announcement</button>` : ''}</aside></section><section class="home-grid" style="margin-top:32px"><div class="home-main"><span class="section-label">The archive</span><div class="archive-grid"><div class="card"><div class="eyebrow">Photo diary</div><h3>Memories</h3><p>${state.memories.length} approved snapshots from the people here.</p><button class="btn small" onclick="go('memories')">Open memories</button></div><div class="card"><div class="eyebrow">Say it</div><h3>Confessions</h3><p>${state.confessions.length} stories, thoughts, and little secrets.</p><button class="btn small" onclick="go('confessions')">Read confessions</button></div><div class="card"><div class="eyebrow">On this day</div><h3>Archive rewind</h3>${today.length ? today.map(x=>`<div class="mini-item"><b>${esc(x.alias)}</b><small>${esc((x.text||x.caption).slice(0,70))}</small></div>`).join('') : '<p>Nothing from this date yet. Leave a trace.</p>'}</div><div class="card card-birthdays"><div class="eyebrow">Coming up</div><h3>Birthdays</h3>${upcoming.length ? upcoming.map(x=>`<div class="mini-item"><b>${esc(x.name)}</b><small>${x.date.toLocaleDateString(undefined,{month:'long',day:'numeric'})}</small></div>`).join('') : '<p>No birthdays added yet.</p>'}<button class="btn small" onclick="openModal('birthday')">Birthday tracker</button></div></div></div><aside class="home-side"><div class="card"><div class="eyebrow">Test tracker</div><h3>Upcoming events</h3>${testsHtml}</div><div class="card"><div class="eyebrow">Got a thought?</div><h3>Community desk</h3><button class="btn small" onclick="openModal('feedback')">Give feedback</button> <button class="btn small" onclick="openModal('concern')">Serious concern</button></div></aside></section></main>`);
         }
 
         // ─── feed ───────────────────────────────────────────────────────────────
@@ -1772,10 +1787,10 @@
               <div class="bday-grid">
                 ${months.map(m => `
                   <div class="bday-month${m.current ? ' current-month' : ''}">
-                    <h4>${m.name}${m.current ? '<span class="current-badge">This month 🎉</span>' : ''}</h4>
-                    ${m.rows.length ? m.rows.map(x =>
-                      `<div class="bday-entry"><span class="day">${x.day}</span><span class="name">${esc(x.name)}<span class="small">birthday</span></span></div>`
-                    ).join('') :
+                    <h4>${m.name}${m.current ? '<span class="current-badge">This month</span>' : ''}</h4>
+                    ${m.rows.length ? `<div class="bday-entries">${m.rows.map(x =>
+                      `<div class="bday-entry"><span class="day">${x.day}</span><span class="name">${esc(x.name)}</span></div>`
+                    ).join('')}</div>` :
                     `<div class="reply-empty">No birthdays yet</div>`}
                   </div>
                 `).join('')}
