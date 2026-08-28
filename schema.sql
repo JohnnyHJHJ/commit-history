@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS confessions (
     name TEXT,
     message TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    approved BOOLEAN NOT NULL DEFAULT FALSE
+    approved BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS memories (
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS memories (
     name TEXT,
     message TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    approved BOOLEAN NOT NULL DEFAULT FALSE
+    approved BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 -- Safe for existing databases created with older versions of the project.

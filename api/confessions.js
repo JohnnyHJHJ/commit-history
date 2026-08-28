@@ -47,14 +47,14 @@ export default async function handler(req, res) {
           ${name || "anonymous"},
           ${message},
           ${image_url || null},
-          false
+          true
         )
         RETURNING *
       `;
 
       return res.status(201).json({
         ...rows[0],
-        status: "pending"
+        status: "published"
       });
     }
 

@@ -3,8 +3,16 @@ const sql = neon(process.env.DATABASE_URL);
 
 const ADMIN_KEY = process.env.ADMIN_KEY || "";
 
+async function ensureAnnouncementFields() {
+  await sql`ALTER TABLE announcements ADD COLUMN IF NOT EXISTS priority TEXT NOT NULL DEFAULT 'NORMAL'`;
+  await sql`ALTER TABLE announcements ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT FALSE`;
+  await sql`ALTER TABLE announcements ADD COLUMN IF NOT EXISTS published BOOLEAN NOT NULL DEFAULT TRUE`;
+  await sql`ALTER TABLE announcements ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`;
+}
+
 export default async function handler(req, res) {
   try {
+    await ensureAnnouncementFields();
     if (req.method === "GET") {
       const rows = await sql`SELECT * FROM announcements WHERE COALESCE(published, true) = true ORDER BY COALESCE(pinned, false) DESC, created_at DESC`;
       return res.status(200).json(rows);
