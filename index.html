@@ -886,6 +886,7 @@
         /* Readability refinements */
         .btn.ghost,.back-home{background:#f7f4ed!important;color:#35223f!important;border-color:#4a3456!important}.pagehead h2,.pagehead .eyebrow{color:#35223f!important;text-shadow:0 1px 0 #fff}.archive-grid .card:nth-child(1),.archive-grid .card:nth-child(2),.archive-grid .card:nth-child(3),.archive-grid .card:nth-child(4){background:#f4efe5}.card{background:#f8f4ec}.bulletin-brand{background:#d5c3e1}.quick-card{background:#676492}.announcement-item .title{font-size:1.15rem}.announcement-item .body{white-space:pre-wrap;line-height:1.6}.announcement-forum h3{font-size:1.5rem;margin:0 0 10px}.announcement-forum .postbody{padding:24px}.subject-sidebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 18px;padding:12px;background:#eee8df;border:2px solid #4a3456}.subject-sidebar .btn{box-shadow:none}.inline-reply-form textarea{min-height:86px}.modal textarea#annBody{min-height:180px;white-space:pre-wrap}
         .bulletin-actions{grid-template-columns:repeat(3,1fr)}.bulletin-actions .btn:last-child{grid-column:span 3}.bulletin-actions #announcementForumBtn{background:#e8e1f2;color:#35223f}@media(max-width:760px){.bulletin-actions{grid-template-columns:1fr}.bulletin-actions .btn:last-child{grid-column:auto}}
+        .pagehead h2,.pagehead .eyebrow{text-shadow:0 0 10px rgba(255,255,255,.85)!important}.announcement-discussion.hidden{display:none}.announcement-discussion{margin-top:14px}.announcement-discussion .replies-wrap{margin-bottom:10px}.announcement-discussion .replies-wrap:empty{display:none}
     </style>
 </head>
 <body>
@@ -1183,9 +1184,18 @@
             state.announcements.forEach(a => loadAnnouncementReplies(a.id));
         }
 
-        async function loadAnnouncementReplies(id) { const box=document.getElementById(`announcementReplies_${id}`); if (!box) return; try { const rows=await api(`/announcement-replies?announcement_id=${id}`); box.innerHTML=rows.length ? rows.map(r=>`<div class="reply-item"><b class="rname">${esc(r.name)}</b><span class="rmsg">${esc(r.message)}</span></div>`).join('') : '<div class="reply-empty">No replies yet — start the conversation.</div>'; } catch { box.textContent='Replies could not load.'; } }
+        async function loadAnnouncementReplies(id) { const box=document.getElementById(`announcementReplies_${id}`); if (!box) return; try { const rows=await api(`/announcement-replies?announcement_id=${id}`); box.innerHTML=rows.length ? rows.map(r=>`<div class="reply-item"><b class="rname">${esc(r.name)}</b><span class="rmsg">${esc(r.message)}</span></div>`).join('') : ''; } catch { box.textContent='Replies could not load.'; } }
         async function replyToAnnouncement(id) { const name=document.getElementById(`announcementName_${id}`).value.trim()||'anonymous'; const message=document.getElementById(`announcementMessage_${id}`).value.trim(); if (!message) return; await api('/announcement-replies',{method:'POST',body:JSON.stringify({announcement_id:id,name,message})}); document.getElementById(`announcementMessage_${id}`).value=''; loadAnnouncementReplies(id); }
         function filterAnnouncementSubject(subject) { document.querySelectorAll('.announcement-forum').forEach(x => x.style.display=x.querySelector('.tag').textContent===subject?'':'none'); }
+
+        // Replace the compact announcement forum with a collapsed, discussion-first view.
+        function renderAnnouncementForum() {
+            const subjects = [...new Set(state.announcements.map(a => a.subject || 'General'))];
+            const cards = state.announcements.map(a => `<article class="post announcement-forum"><div class="postbody"><div class="posttop"><span class="tag">${esc(a.subject || 'General')}</span><span>${new Date(a.created_at).toLocaleDateString()}</span></div><h3>${esc(a.title)}</h3><p>${esc(a.body)}</p><button class="btn small" onclick="toggleAnnouncementDiscussion(${a.id})">View discussion</button><div id="announcementDiscussion_${a.id}" class="announcement-discussion hidden"><div id="announcementReplies_${a.id}" class="replies-wrap"></div><div class="inline-reply-form open"><input id="announcementName_${a.id}" maxlength="40" placeholder="Alias (optional)"><textarea id="announcementMessage_${a.id}" maxlength="2000" placeholder="Ask a question or add to the discussion…"></textarea><button class="btn primary small" onclick="replyToAnnouncement(${a.id})">Reply</button></div></div></div></article>`).join('') || '<div class="empty">No announcements yet.</div>';
+            shell(`<main class="page"><button class="btn ghost small back-home" onclick="go('home')">← Back home</button><div class="pagehead"><div class="left"><div class="eyebrow">Community bulletin</div><h2>Announcement forum</h2><p>Updates, subjects, and questions in one place.</p></div></div><div class="subject-sidebar"><b>Subjects</b><button class="btn small" onclick="filterAnnouncementSubject('')">All announcements</button>${subjects.map(s=>`<button class="btn small" onclick="filterAnnouncementSubject('${esc(s)}')">${esc(s)}</button>`).join('')}</div><div id="announcementFeed" class="feed">${cards}</div></main>`);
+        }
+        function toggleAnnouncementDiscussion(id) { const box=document.getElementById(`announcementDiscussion_${id}`); if (!box) return; box.classList.toggle('hidden'); if (!box.classList.contains('hidden')) loadAnnouncementReplies(id); }
+        function filterAnnouncementSubject(subject) { document.querySelectorAll('.announcement-forum').forEach(x => x.style.display=!subject || x.querySelector('.tag').textContent===subject?'':'none'); }
 
         // ─── reply toggle ──────────────────────────────────────────────────────
         function toggleReplyForm(btn, id) {
@@ -1521,6 +1531,8 @@
                 </div>
               </div>
             `).join('')}
+            <h3 style="margin-top:22px">Published posts</h3>
+            ${(state.published || []).length ? state.published.map(x => `<div class="mini-item"><b>${esc(x.alias || x.name)} · ${esc(x.tag)}</b><small>${esc((x.text || x.caption || '').slice(0,100))}</small><button class="btn danger small" style="margin-top:7px" onclick="deletePublished('${esc(x.kind)}',${Number(x.id)})">Delete post</button></div>`).join('') : '<p>No published posts.</p>'}
             <hr style="border-color:var(--line);margin:20px 0;">
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
               <button class="btn primary" onclick="closeModal();openModal('addAnnouncement')">+ Announcement</button>
@@ -1536,7 +1548,7 @@
         function login() {
             const password = document.querySelector('#password')?.value || '';
             adminKey = password;
-            api('/admin').then(() => { admin = true; sessionStorage.setItem('commit-history-admin-key', adminKey); closeModal(); setTimeout(() => openModal('admin'), 80); loadData(); }).catch(() => { adminKey = ''; const err = document.querySelector('#err'); if (err) err.textContent = 'That admin key is not authorized.'; });
+            loadAdminData().then(() => { admin = true; sessionStorage.setItem('commit-history-admin-key', adminKey); closeModal(); setTimeout(() => openModal('admin'), 80); loadData(); }).catch(() => { adminKey = ''; const err = document.querySelector('#err'); if (err) err.textContent = 'That admin key is not authorized.'; });
         }
 
         function signOut() {
@@ -1547,9 +1559,16 @@
             render();
         }
 
-        function moderate(i, approve) {
-            alert('Moderation is not connected to the API yet. The public posts and reactions are connected to Neon.');
+        async function moderate(i, approve) {
+            const item = (state.queue || [])[i]; if (!item) return;
+            const action = approve ? 'approve' : 'delete';
+            if (!approve && !confirm('Delete this post permanently?')) return;
+            await api('/admin', { method:'POST', body:JSON.stringify({ action, kind:item.kind, id:Number(item.id) }) });
+            await loadAdminData(); closeModal(); openModal('admin');
         }
+
+        async function deletePublished(kind, id) { if (!confirm('Delete this post permanently?')) return; await api('/admin', {method:'POST',body:JSON.stringify({action:'delete',kind,id})}); await loadAdminData(); closeModal(); openModal('admin'); }
+        async function loadAdminData() { const data=await api('/admin'); state.queue=[...(data.confessions||[]),...(data.memories||[])].map(normalizePost); state.published=(data.published||[]).map(normalizePost); return data; }
 
         // ─── admin: announcements & tests ──────────────────────────────────────
         async function addAnnouncement() {
