@@ -968,6 +968,21 @@
         .color-swatch{width:34px;height:34px;border:3px solid #111;border-radius:0;box-shadow:2px 2px 0 #111;cursor:pointer;transition:transform var(--transition),box-shadow var(--transition)}
         .color-swatch:hover{transform:translate(1px,1px);box-shadow:1px 1px 0 #111}
         .color-swatch.selected{outline:3px solid #35223f;outline-offset:2px}
+
+        /* ── announcement search box ── */
+        .ann-search{margin-left:auto;border:2px solid #4a3456;background:#fff;color:#35223f;border-radius:0;padding:8px 12px;min-width:200px;font-size:.85rem}
+        .ann-search:focus{outline:none;border-color:#111}
+        @media(max-width:600px){.ann-search{margin-left:0;width:100%}}
+
+        /* ── test tracker: countdown + soon/past states ── */
+        .test-date{display:flex;flex-direction:column;align-items:flex-end;gap:1px;color:#4a3456}
+        .countdown{display:block;font-size:.68rem;font-weight:700;color:#7a6a8a}
+        .test-desc{color:#35223f}
+        .test-item.soon{background:#fdeecb}
+        .test-item.soon .countdown{color:#b45309}
+        .test-item.soon .subject-badge{box-shadow:0 0 0 2px #f5c87a}
+        .test-item.past{opacity:.5}
+        .test-item.past .countdown{font-style:italic}
     </style>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -1005,6 +1020,19 @@
         function linkify(s) {
             return esc(s).replace(/(https?:\/\/[^\s<]+)/g, url =>
                 `<a href="${url}" target="_blank" rel="noopener noreferrer" class="ann-link">${url}</a>`);
+        }
+
+        // Human countdown label for a test/event date, e.g. "Today", "in 3 days", "2 days ago".
+        function countdownLabel(dateStr) {
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const target = new Date(dateStr); target.setHours(0, 0, 0, 0);
+            const days = Math.round((target - today) / 86400000);
+            if (Number.isNaN(days)) return '';
+            if (days === 0) return 'Today';
+            if (days === 1) return 'Tomorrow';
+            if (days === -1) return 'Yesterday';
+            if (days > 1) return `in ${days} days`;
+            return `${Math.abs(days)} days ago`;
         }
 
         function total(x) { return Object.values(x.reactions || {}).reduce((a, b) => a + Number(b || 0), 0); }
@@ -1142,19 +1170,22 @@
                 <div class="title">${a.pinned ? '📌 ' : ''}${esc(a.title)}</div>
                 <div class="meta"><span>${new Date(a.created_at).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</span>${a.author ? `<span>by ${esc(a.author)}</span>` : ''}</div>
                 <div class="body">${linkify(a.body)}</div>
-                ${isAdmin ? `<div class="admin-actions"><button class="btn small" onclick="togglePin(${a.id}, ${a.pinned ? 'true' : 'false'})">${a.pinned ? 'Unpin' : '📌 Pin'}</button><button class="btn small danger" onclick="deleteAnnouncement(${a.id})">Delete</button></div>` : ''}
+                ${isAdmin ? `<div class="admin-actions"><button class="btn small" onclick="openEditAnnouncement(${a.id})">Edit</button><button class="btn small" onclick="togglePin(${a.id}, ${a.pinned ? 'true' : 'false'})">${a.pinned ? 'Unpin' : '📌 Pin'}</button><button class="btn small danger" onclick="deleteAnnouncement(${a.id})">Delete</button></div>` : ''}
               </div>`;
                 }).join('') :
                 `<div class="empty" style="padding:20px 0;border:none;">No announcements yet.</div>`;
 
             // tests timeline
-            const testsHtml = state.tests.length ?
-                state.tests.map(t => {
+            const sortedTests = [...state.tests].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const testsHtml = sortedTests.length ?
+                sortedTests.map(t => {
                     const subjClass = SUBJECT_COLORS[t.subject] || '';
                     const isAdmin = admin;
-                    return `<div class="test-item">
+                    const days = Math.round((new Date(new Date(t.date).setHours(0,0,0,0)) - new Date(new Date().setHours(0,0,0,0))) / 86400000);
+                    const soonClass = days >= 0 && days <= 3 ? ' soon' : days < 0 ? ' past' : '';
+                    return `<div class="test-item${soonClass}">
                 <span class="subject-badge ${subjClass}">${esc(t.subject)}</span>
-                <span class="test-date">${new Date(t.date).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span>
+                <span class="test-date">${new Date(t.date).toLocaleDateString(undefined,{month:'short',day:'numeric'})}<small class="countdown">${countdownLabel(t.date)}</small></span>
                 <span class="test-desc">${esc(t.description)}</span>
                 ${isAdmin ? `<div class="admin-actions"><button class="btn small danger" onclick="deleteTest(${t.id})">×</button></div>` : ''}
               </div>`;
@@ -1313,18 +1344,34 @@
             
                 const cards = state.announcements.map(a => {
                     const bg = ANNOUNCEMENT_COLORS[a.color] || ANNOUNCEMENT_COLORS.cream;
-                    return `<article class="post announcement-forum${a.pinned ? ' pinned' : ''}" id="announcement-${a.id}" style="background:${bg}"><div class="postbody"><div class="posttop"><span class="tag">${a.pinned ? '📌 ' : ''}${esc(a.subject || 'General')}</span><span>${new Date(a.created_at).toLocaleDateString()}</span></div><h3>${esc(a.title)}</h3><p>${linkify(a.body)}</p>${admin ? `<div class="admin-actions mt-8"><button class="btn small" onclick="togglePin(${a.id}, ${a.pinned ? 'true' : 'false'})">${a.pinned ? 'Unpin' : '📌 Pin to sidebar'}</button><button class="btn small danger" onclick="deleteAnnouncement(${a.id})">Delete</button></div>` : ''}<div id="announcementReplies_${a.id}" class="replies-wrap">Loading discussion…</div><button class="btn small reply-toggle" onclick="toggleAnnouncementReplyForm(${a.id})"><span class="icon">💬</span> Reply or ask a question</button><div class="inline-reply-form" id="announcementForm_${a.id}"><input id="announcementName_${a.id}" maxlength="40" placeholder="Alias (optional)"><textarea id="announcementMessage_${a.id}" maxlength="2000" placeholder="Ask a question or add to the discussion…"></textarea><button class="btn primary small" onclick="replyToAnnouncement(${a.id})">Reply</button></div></div></article>`;
+                    const searchBlob = esc(`${a.title} ${a.body} ${a.subject || 'General'}`.toLowerCase());
+                    return `<article class="post announcement-forum${a.pinned ? ' pinned' : ''}" id="announcement-${a.id}" style="background:${bg}" data-search="${searchBlob}"><div class="postbody"><div class="posttop"><span class="tag">${a.pinned ? '📌 ' : ''}${esc(a.subject || 'General')}</span><span>${new Date(a.created_at).toLocaleDateString()}</span></div><h3>${esc(a.title)}</h3><p>${linkify(a.body)}</p>${admin ? `<div class="admin-actions mt-8"><button class="btn small" onclick="openEditAnnouncement(${a.id})">Edit</button><button class="btn small" onclick="togglePin(${a.id}, ${a.pinned ? 'true' : 'false'})">${a.pinned ? 'Unpin' : '📌 Pin to sidebar'}</button><button class="btn small danger" onclick="deleteAnnouncement(${a.id})">Delete</button></div>` : ''}<div id="announcementReplies_${a.id}" class="replies-wrap">Loading discussion…</div><button class="btn small reply-toggle" onclick="toggleAnnouncementReplyForm(${a.id})"><span class="icon">💬</span> Reply or ask a question</button><div class="inline-reply-form" id="announcementForm_${a.id}"><input id="announcementName_${a.id}" maxlength="40" placeholder="Alias (optional)"><textarea id="announcementMessage_${a.id}" maxlength="2000" placeholder="Ask a question or add to the discussion…"></textarea><button class="btn primary small" onclick="replyToAnnouncement(${a.id})">Reply</button></div></div></article>`;
                 }).join('') || '<div class="empty">No announcements yet.</div>';
             
                 const pinnedHtml = pinned.length
                     ? pinned.map(a => `<div class="pinned-item" onclick="scrollToAnnouncement(${a.id})"><div class="pinned-title">📌 ${esc(a.title)}</div><div class="pinned-meta">${esc(a.subject || 'General')} · ${new Date(a.created_at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div></div>`).join('')
                     : '<div class="empty" style="padding:14px;border:none;font-size:.82rem;">No pinned announcements yet.</div>';
             
-                shell(`<main class="page" style="max-width:1080px"><button class="btn ghost small back-home" onclick="go('home')">← Back home</button><div class="pagehead" style="padding-top:20px"><div class="left"><div class="eyebrow">Community bulletin</div><h2>Announcement forum</h2><p>Updates, subjects, and questions in one place.</p></div></div><div class="subject-sidebar"><b>Subjects</b><button class="btn small" onclick="filterAnnouncementSubject('')">All announcements</button>${subjects.map(s=>`<button class="btn small" onclick="filterAnnouncementSubject('${esc(s)}')">${esc(s)}</button>`).join('')}</div><div class="announcement-forum-layout"><div id="announcementFeed" class="feed">${cards}</div><aside class="pinned-sidebar"><h4>📌 Pinned announcements</h4>${pinnedHtml}</aside></div></main>`);
+                shell(`<main class="page" style="max-width:1080px"><button class="btn ghost small back-home" onclick="go('home')">← Back home</button><div class="pagehead" style="padding-top:20px"><div class="left"><div class="eyebrow">Community bulletin</div><h2>Announcement forum</h2><p>Updates, subjects, and questions in one place.</p></div></div><div class="subject-sidebar"><b>Subjects</b><button class="btn small" onclick="filterAnnouncementSubject('')">All announcements</button>${subjects.map(s=>`<button class="btn small" onclick="filterAnnouncementSubject('${esc(s)}')">${esc(s)}</button>`).join('')}<input id="announcementSearch" class="ann-search" placeholder="Search announcements…" oninput="applyAnnouncementFilters(this.value)"></div><div id="announcementEmpty" class="empty hidden" style="margin-bottom:14px">No announcements match your search.</div><div class="announcement-forum-layout"><div id="announcementFeed" class="feed">${cards}</div><aside class="pinned-sidebar"><h4>📌 Pinned announcements</h4>${pinnedHtml}</aside></div></main>`);
                 state.announcements.forEach(a => loadAnnouncementReplies(a.id));
             }
+        let annSubjectFilter = '';
         function toggleAnnouncementReplyForm(id) { const box=document.getElementById(`announcementForm_${id}`); if (box) box.classList.toggle('open'); }
-        function filterAnnouncementSubject(subject) { document.querySelectorAll('.announcement-forum').forEach(x => x.style.display=!subject || x.querySelector('.tag').textContent.replace('📌 ','')===subject?'':'none'); }
+        function filterAnnouncementSubject(subject) { annSubjectFilter = subject; applyAnnouncementFilters(); }
+        function applyAnnouncementFilters(query) {
+            const q = (query ?? document.getElementById('announcementSearch')?.value ?? '').trim().toLowerCase();
+            let visibleCount = 0;
+            document.querySelectorAll('.announcement-forum').forEach(el => {
+                const subject = el.querySelector('.tag').textContent.replace('📌 ', '');
+                const matchesSubject = !annSubjectFilter || subject === annSubjectFilter;
+                const matchesSearch = !q || (el.dataset.search || '').includes(q);
+                const show = matchesSubject && matchesSearch;
+                el.style.display = show ? '' : 'none';
+                if (show) visibleCount++;
+            });
+            const empty = document.getElementById('announcementEmpty');
+            if (empty) empty.classList.toggle('hidden', visibleCount !== 0);
+        }
         function scrollToAnnouncement(id) {
             const el = document.getElementById(`announcement-${id}`);
             if (!el) return;
@@ -1508,7 +1555,7 @@
         }
 
         // ─── modal system ──────────────────────────────────────────────────────
-        function openModal(type) {
+        function openModal(type, payload) {
             let body = '';
             if (type === 'confession') {
                 body = `
@@ -1613,27 +1660,30 @@
                   <button class="btn primary" onclick="login()">Enter admin</button>
                 </div>
               `;
-            } else if (type === 'addAnnouncement') {
+            } else if (type === 'addAnnouncement' || type === 'editAnnouncement') {
+                const editing = type === 'editAnnouncement';
+                const a = editing ? payload : null;
+                const selectedColor = a?.color || 'cream';
                 body = `
-              <h3>Add announcement</h3>
+              <h3>${editing ? 'Edit announcement' : 'Add announcement'}</h3>
               <label>Title</label>
-              <input id="annTitle" placeholder="Announcement title">
+              <input id="annTitle" placeholder="Announcement title" value="${a ? esc(a.title) : ''}">
               <label>Subject</label>
-              <input id="annSubject" maxlength="80" value="General" placeholder="e.g. General, Events, Academics">
+              <input id="annSubject" maxlength="80" value="${a ? esc(a.subject || 'General') : 'General'}" placeholder="e.g. General, Events, Academics">
               <label>Message</label>
-              <textarea id="annBody" maxlength="5000" placeholder="Write an announcement… Use Enter for paragraphs."></textarea>
+              <textarea id="annBody" maxlength="5000" placeholder="Write an announcement… Use Enter for paragraphs.">${a ? esc(a.body) : ''}</textarea>
               <label>Author (optional)</label>
-              <input id="annAuthor" placeholder="e.g. Admin">
+              <input id="annAuthor" placeholder="e.g. Admin" value="${a ? esc(a.author || '') : ''}">
               <label>Card color</label>
               <div class="color-picker" id="annColorPicker">
-                ${Object.entries(ANNOUNCEMENT_COLORS).map(([key, hex], i) =>
-                  `<button type="button" class="color-swatch${i === 0 ? ' selected' : ''}" data-color="${key}" style="background:${hex}" onclick="selectAnnColor('${key}')" title="${key}"></button>`
+                ${Object.entries(ANNOUNCEMENT_COLORS).map(([key, hex]) =>
+                  `<button type="button" class="color-swatch${key === selectedColor ? ' selected' : ''}" data-color="${key}" style="background:${hex}" onclick="selectAnnColor('${key}')" title="${key}"></button>`
                 ).join('')}
               </div>
-              <input type="hidden" id="annColor" value="cream">
+              <input type="hidden" id="annColor" value="${selectedColor}">
               <div class="modalfoot">
                 <button class="btn ghost" onclick="closeModal()">Cancel</button>
-                <button class="btn primary" onclick="addAnnouncement()">Publish</button>
+                <button class="btn primary" onclick="${editing ? `saveAnnouncementEdit(${a.id})` : 'addAnnouncement()'}">${editing ? 'Save changes' : 'Publish'}</button>
               </div>
             `;
             } else if (type === 'addTest') {
@@ -1745,6 +1795,30 @@
                         subject: document.querySelector('#annSubject')?.value.trim() || 'General',
                         color: document.querySelector('#annColor')?.value || 'cream'
                     })
+                });
+                closeModal();
+                await loadData();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        function openEditAnnouncement(id) {
+            const a = state.announcements.find(x => x.id === id);
+            if (a) openModal('editAnnouncement', a);
+        }
+
+        async function saveAnnouncementEdit(id) {
+            const title = document.querySelector('#annTitle')?.value.trim();
+            const body = document.querySelector('#annBody')?.value.trim();
+            const author = document.querySelector('#annAuthor')?.value.trim() || 'Admin';
+            const subject = document.querySelector('#annSubject')?.value.trim() || 'General';
+            const color = document.querySelector('#annColor')?.value || 'cream';
+            if (!title || !body) return alert('Title and message are required.');
+            try {
+                await api('/announcements', {
+                    method: 'PATCH',
+                    body: JSON.stringify({ id, title, body, author, subject, color })
                 });
                 closeModal();
                 await loadData();
