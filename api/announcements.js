@@ -45,12 +45,13 @@ export default async function handler(req, res) {
     }
 
     if (req.method === "PATCH") {
-      const { id, title, body, author, priority, pinned, published, color } = req.body || {};
+      const { id, title, body, author, subject, priority, pinned, published, color } = req.body || {};
       if (!Number.isSafeInteger(Number(id))) return res.status(400).json({ error: "Valid ID required" });
       const [row] = await sql`UPDATE announcements SET
         title = COALESCE(${title ? String(title).trim().slice(0, 200) : null}, title),
         body = COALESCE(${body ? String(body).trim().slice(0, 2000) : null}, body),
         author = COALESCE(${author ? String(author).trim().slice(0, 40) : null}, author),
+        subject = COALESCE(${subject ? String(subject).trim().slice(0, 80) : null}, subject),
         priority = COALESCE(${["NORMAL", "IMPORTANT", "URGENT"].includes(priority) ? priority : null}, priority),
         pinned = COALESCE(${typeof pinned === "boolean" ? pinned : null}, pinned),
         published = COALESCE(${typeof published === "boolean" ? published : null}, published),
